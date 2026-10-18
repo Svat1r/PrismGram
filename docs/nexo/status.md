@@ -15,8 +15,8 @@ compiled or run. Updated as work goes on.
 | Nexo settings storage (`tdata/nexo/settings.json`) | Compiles; not checked |
 | Auto-update | Disabled until own keys and server exist |
 | Own update keys and server | Not started |
-| Nexo themes | Not started |
-| Pill search with proxy chip | Not started |
+| Nexo themes (Night, AMOLED, Ocean, Violet, Forest) in Appearance | Compiles, app starts; needs a logged-in session to check |
+| Proxy chip in the search field (field was already pill-shaped) | Compiles, app starts; needs a logged-in session to check |
 | Plugin system and manager | Not started (see exteragram-comparison.md) |
 | Linux and macOS builds | Not attempted |
 | Tests | Launch and login screen (QR code from Telegram servers) checked; nothing else yet |

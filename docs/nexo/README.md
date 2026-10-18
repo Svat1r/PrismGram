@@ -19,7 +19,10 @@ Status of everything listed here is tracked in [status.md](status.md).
 | `Telegram/SourceFiles/nexo/nexo_lang.*` | Built-in translations of `nexo_*` strings |
 | `Telegram/SourceFiles/nexo/settings/` | Settings sections: Connection, Appearance |
 | `Telegram/SourceFiles/nexo/connection/` | Bulk proxy tools |
-| `Telegram/SourceFiles/nexo/ui/` | Bottom navigation bar, `nexo_ui.style` |
+| `Telegram/SourceFiles/nexo/ui/` | Bottom navigation bar, proxy chip, theme picker, `nexo_ui.style` |
+| `Telegram/SourceFiles/nexo/themes/` | Built-in Nexo themes |
+| `Telegram/Resources/nexo/themes/` | Theme files and `make_themes.py` |
+| `Telegram/Resources/qrc/nexo/nexo.qrc` | Nexo resources |
 | `Telegram/Resources/art/nexo/` | Logo source and `make_icons.py` |
 | `docs/nexo/` | This documentation |
 
@@ -39,7 +42,8 @@ Kept small on purpose, so AyuGram updates merge with few conflicts.
 | `SourceFiles/core/application.cpp` | `Nexo::Lang::Init()`, short app name |
 | `SourceFiles/core/launcher.cpp` | Qt application name |
 | `SourceFiles/boxes/connection_box.h` | Declarations of bulk proxy tools |
-| `SourceFiles/dialogs/dialogs_widget.*` | Bottom navigation bar |
+| `SourceFiles/dialogs/dialogs_widget.*` | Bottom navigation bar, proxy chip |
+| `SourceFiles/window/main_window.cpp` | Window title |
 | `SourceFiles/settings/sections/settings_main.cpp` | Appearance and Connection entries |
 | `SourceFiles/ayu/utils/windows_utils.cpp` | Touch only Nexo shortcuts, never AyuGram's |
 | `about_box.cpp`, `intro_widget.cpp`, `crash_report*.cpp`, `history_item_helpers.cpp` | Visible name |

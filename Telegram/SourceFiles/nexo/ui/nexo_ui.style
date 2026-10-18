@@ -19,3 +19,21 @@ nexoNavBadgeFont: font(10px semibold);
 nexoNavBadgeHeight: 15px;
 nexoNavBadgePadding: 4px;
 nexoNavBadgeShift: point(12px, 2px);
+
+// Proxy chip inside the chat list search field.
+nexoProxyChipHeight: 26px;
+nexoProxyChipPadding: margins(7px, 0px, 10px, 0px);
+nexoProxyChipSkip: 4px;
+nexoProxyChipRight: 5px;
+nexoProxyChipFont: font(12px);
+nexoProxyChipIconOn: icon {{ "proxy_on", windowActiveTextFg }};
+nexoProxyChipIconOff: icon {{ "proxy_off", windowSubTextFg }};
+
+// Theme cards in Settings > Appearance.
+nexoThemeCardSize: size(58px, 78px);
+nexoThemeCardSkip: 8px;
+nexoThemeCardRadius: 12px;
+nexoThemeCardBorder: 2px;
+nexoThemeCardPadding: margins(22px, 6px, 22px, 6px);
+nexoThemeNameTop: 6px;
+nexoThemeNameFont: font(12px);

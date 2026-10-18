@@ -9226,3 +9226,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_appearance_bottom_nav_about" = "Chats, Contacts, Settings and Profile buttons under the chat list. Hidden when the chat list is too narrow.";
 "nexo_appearance_themes" = "Themes, colors and wallpapers";
 "nexo_appearance_more" = "Fonts, corners and other tweaks";
+"nexo_proxy_chip" = "Proxy";
+"nexo_appearance_proxy_chip" = "Proxy button in search";
+"nexo_appearance_proxy_chip_about" = "Shows whether a proxy is in use. Click it to open Connection settings.";
+"nexo_appearance_nexo_themes" = "Nexo themes";
+"nexo_appearance_nexo_themes_about" = "Dark themes made for Nexo Desk. Telegram themes, accent colors and wallpapers are still available below.";

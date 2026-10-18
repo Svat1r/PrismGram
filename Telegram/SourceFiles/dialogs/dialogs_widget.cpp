@@ -113,6 +113,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/utils/telegram_helpers.h"
 #include "nexo/nexo_settings.h"
 #include "nexo/ui/bottom_nav_bar.h"
+#include "nexo/ui/proxy_chip.h"
+#include "nexo/settings/settings_connection.h"
+#include "styles/style_nexo_ui.h"
 #include "base/platform/base_platform_haptic.h"
 
 
@@ -833,6 +836,18 @@ Widget::Widget(
 		Nexo::Settings::Instance().bottomNavBarValue(
 		) | rpl::skip(1) | rpl::on_next([=] {
 			updateControlsGeometry();
+		}, lifetime());
+
+		// Nexo Desk: proxy chip inside the search field.
+		_nexoProxyChip.create(_searchControls);
+		_nexoProxyChip->setClickedCallback([=] {
+			controller->showSettings(::Settings::NexoConnectionId());
+		});
+		rpl::merge(
+			Nexo::Settings::Instance().proxyChipValue() | rpl::to_empty,
+			_nexoProxyChip->widthValue() | rpl::to_empty
+		) | rpl::on_next([=] {
+			updateNexoProxyChip();
 		}, lifetime());
 
 		changeOpenedFolder(
@@ -2069,7 +2084,41 @@ void Widget::updateControlsVisibility(bool fast) {
 	updateLockUnlockPosition();
 }
 
+void Widget::updateNexoProxyChip() {
+	if (!_nexoProxyChip) {
+		return;
+	}
+	const auto shown = Nexo::Settings::Instance().proxyChip()
+		&& !_searchHasFocus
+		&& _searchState.query.isEmpty()
+		&& !_searchState.inChat
+		&& !_childList
+		&& width() >= st::columnMinimalWidthLeft;
+	_nexoProxyChip->setVisible(shown);
+	if (!shown) {
+		return;
+	}
+	// Right edge of the free part of the search field: left of the
+	// collapsed stories and of the passcode lock button.
+	auto right = _search->x() + _search->width();
+	if (_stories && !_stories->isHidden()) {
+		const auto stories = _stories->collapsedGeometryCurrent();
+		if (!stories.geometry.isEmpty()) {
+			right = std::min(right, stories.geometry.x());
+		}
+	}
+	if (!_lockUnlock->isHidden()) {
+		right = std::min(right, _lockUnlock->x());
+	}
+	right -= st::nexoProxyChipRight;
+	_nexoProxyChip->moveToLeft(
+		right - _nexoProxyChip->width(),
+		_search->y() + (_search->height() - _nexoProxyChip->height()) / 2);
+	_nexoProxyChip->raise();
+}
+
 void Widget::updateLockUnlockPosition() {
+	updateNexoProxyChip();
 	if (_lockUnlock->isHidden()) {
 		return;
 	}
@@ -2090,6 +2139,7 @@ void Widget::updateHasFocus(not_null<QWidget*> focused) {
 		|| (focused == _search->rawTextEdit());
 	if (_searchHasFocus != has) {
 		_searchHasFocus = has;
+		updateNexoProxyChip();
 		if (_postponeProcessSearchFocusChange) {
 			return;
 		} else if (has) {
@@ -4014,6 +4064,7 @@ void Widget::updateCancelSearch() {
 		|| (!_searchState.inChat
 			&& (searchActive() || _searchSuggestionsLocked));
 	_cancelSearch->toggle(shown, anim::type::normal);
+	updateNexoProxyChip();
 	if (_searchState.inChat) {
 		_cancelSearch->setAccessibleName(shown
 			? tr::lng_sr_clear_search(tr::now)

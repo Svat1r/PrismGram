@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/nexo">
+        <file alias="themes/nexo-night.tdesktop-theme">../../nexo/themes/nexo-night.tdesktop-theme</file>
+        <file alias="themes/nexo-amoled.tdesktop-theme">../../nexo/themes/nexo-amoled.tdesktop-theme</file>
+        <file alias="themes/nexo-ocean.tdesktop-theme">../../nexo/themes/nexo-ocean.tdesktop-theme</file>
+        <file alias="themes/nexo-violet.tdesktop-theme">../../nexo/themes/nexo-violet.tdesktop-theme</file>
+        <file alias="themes/nexo-forest.tdesktop-theme">../../nexo/themes/nexo-forest.tdesktop-theme</file>
+    </qresource>
+</RCC>

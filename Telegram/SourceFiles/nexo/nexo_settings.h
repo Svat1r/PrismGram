@@ -15,6 +15,10 @@ public:
 	[[nodiscard]] rpl::producer<bool> bottomNavBarValue() const;
 	void setBottomNavBar(bool enabled);
 
+	[[nodiscard]] bool proxyChip() const;
+	[[nodiscard]] rpl::producer<bool> proxyChipValue() const;
+	void setProxyChip(bool enabled);
+
 private:
 	Settings();
 
@@ -22,6 +26,7 @@ private:
 	void save() const;
 
 	rpl::variable<bool> _bottomNavBar = true;
+	rpl::variable<bool> _proxyChip = true;
 
 };
 

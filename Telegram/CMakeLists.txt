@@ -171,6 +171,12 @@ set(ayugram_files
         nexo/settings/settings_appearance.h
         nexo/ui/bottom_nav_bar.cpp
         nexo/ui/bottom_nav_bar.h
+        nexo/ui/proxy_chip.cpp
+        nexo/ui/proxy_chip.h
+        nexo/ui/theme_picker.cpp
+        nexo/ui/theme_picker.h
+        nexo/themes/nexo_themes.cpp
+        nexo/themes/nexo_themes.h
         nexo/connection/nexo_proxy_tools.cpp
         nexo/settings/settings_connection.cpp
         nexo/settings/settings_connection.h
@@ -2391,6 +2397,7 @@ endif()
 nice_target_sources(Telegram ${res_loc}
 PRIVATE
     qrc/ayu/ayu.qrc
+    qrc/nexo/nexo.qrc
 
     qrc/emoji_1.qrc
     qrc/emoji_2.qrc

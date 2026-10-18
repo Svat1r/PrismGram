@@ -36,6 +36,7 @@ class Session;
 
 namespace Nexo::Ui {
 class BottomNavBar;
+class ProxyChip;
 } // namespace Nexo::Ui
 
 namespace HistoryView {
@@ -310,6 +311,7 @@ private:
 	void startScrollUpButtonAnimation(bool shown);
 	void updateScrollUpPosition();
 	void updateLockUnlockPosition();
+	void updateNexoProxyChip();
 	void updateSuggestions(anim::type animated);
 	void processSearchFocusChange();
 	void closeSuggestions();
@@ -384,6 +386,7 @@ private:
 	object_ptr<BottomButton> _loadMoreChats = { nullptr };
 	std::unique_ptr<Ui::DownloadBar> _downloadBar;
 	object_ptr<Nexo::Ui::BottomNavBar> _nexoNavBar = { nullptr };
+	object_ptr<Nexo::Ui::ProxyChip> _nexoProxyChip = { nullptr };
 	std::unique_ptr<Window::ConnectionState> _connecting;
 
 	Ui::Animations::Simple _scrollToAnimation;

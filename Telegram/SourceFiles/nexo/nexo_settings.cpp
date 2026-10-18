@@ -48,6 +48,22 @@ void Settings::setBottomNavBar(bool enabled) {
 	save();
 }
 
+bool Settings::proxyChip() const {
+	return _proxyChip.current();
+}
+
+rpl::producer<bool> Settings::proxyChipValue() const {
+	return _proxyChip.value();
+}
+
+void Settings::setProxyChip(bool enabled) {
+	if (_proxyChip.current() == enabled) {
+		return;
+	}
+	_proxyChip = enabled;
+	save();
+}
+
 void Settings::load() {
 	auto file = QFile(SettingsPath());
 	if (!file.exists()) {
@@ -72,6 +88,10 @@ void Settings::load() {
 	if (bottomNavBar.isBool()) {
 		_bottomNavBar = bottomNavBar.toBool();
 	}
+	const auto proxyChip = object.value(u"proxy_chip"_q);
+	if (proxyChip.isBool()) {
+		_proxyChip = proxyChip.toBool();
+	}
 }
 
 void Settings::save() const {
@@ -79,6 +99,7 @@ void Settings::save() const {
 	auto object = QJsonObject();
 	object.insert(u"version"_q, 1);
 	object.insert(u"bottom_nav_bar"_q, _bottomNavBar.current());
+	object.insert(u"proxy_chip"_q, _proxyChip.current());
 
 	// QSaveFile writes to a temp file and renames it, so a crash while
 	// saving never leaves a half-written settings file.
