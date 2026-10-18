@@ -115,9 +115,15 @@ void BottomNavBar::setOver(int index) {
 }
 
 int BottomNavBar::activeIndex() const {
-	const auto section = _controller->content()->mainSection();
+	// Only a real Info section (settings, a profile) owns its WrapWidget as
+	// a direct child. Other sections (comments, topics) may hold a nested
+	// one that is still being built or destroyed: never touch those.
+	const auto section = dynamic_cast<Info::SectionWidget*>(
+		_controller->content()->mainSection());
 	const auto wrap = section
-		? section->findChild<Info::WrapWidget*>()
+		? section->findChild<Info::WrapWidget*>(
+			QString(),
+			Qt::FindDirectChildrenOnly)
 		: nullptr;
 	if (!wrap) {
 		return kChatsIndex;
