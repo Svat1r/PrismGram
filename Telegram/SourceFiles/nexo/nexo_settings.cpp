@@ -23,44 +23,47 @@ constexpr auto kMaxFileSize = qint64(64 * 1024);
 
 } // namespace
 
+const std::vector<Settings::Entry> &Settings::Entries() {
+	// Keys are stored in settings.json; never rename them.
+	static const auto result = std::vector<Entry>{
+		{ Flag::BottomNavBar, "bottom_nav_bar", true },
+		{ Flag::ProxyChip, "proxy_chip", true },
+		{ Flag::NoNumberRounding, "no_number_rounding", false },
+		{ Flag::CommaAfterMention, "comma_after_mention", false },
+		{ Flag::CenteredTitle, "centered_title", false },
+		{ Flag::SpeedBoost, "speed_boost", false },
+	};
+	return result;
+}
+
 Settings &Settings::Instance() {
 	static auto instance = Settings();
 	return instance;
 }
 
 Settings::Settings() {
+	for (const auto &entry : Entries()) {
+		_values.emplace(
+			entry.flag,
+			std::make_unique<rpl::variable<bool>>(entry.defaultValue));
+	}
 	load();
 }
 
-bool Settings::bottomNavBar() const {
-	return _bottomNavBar.current();
+bool Settings::get(Flag flag) const {
+	return _values.find(flag)->second->current();
 }
 
-rpl::producer<bool> Settings::bottomNavBarValue() const {
-	return _bottomNavBar.value();
+rpl::producer<bool> Settings::value(Flag flag) const {
+	return _values.find(flag)->second->value();
 }
 
-void Settings::setBottomNavBar(bool enabled) {
-	if (_bottomNavBar.current() == enabled) {
+void Settings::set(Flag flag, bool enabled) {
+	auto &variable = *_values.find(flag)->second;
+	if (variable.current() == enabled) {
 		return;
 	}
-	_bottomNavBar = enabled;
-	save();
-}
-
-bool Settings::proxyChip() const {
-	return _proxyChip.current();
-}
-
-rpl::producer<bool> Settings::proxyChipValue() const {
-	return _proxyChip.value();
-}
-
-void Settings::setProxyChip(bool enabled) {
-	if (_proxyChip.current() == enabled) {
-		return;
-	}
-	_proxyChip = enabled;
+	variable = enabled;
 	save();
 }
 
@@ -84,13 +87,11 @@ void Settings::load() {
 	// Unknown keys are ignored and missing keys keep their defaults,
 	// so files from older and newer versions both load.
 	const auto object = document.object();
-	const auto bottomNavBar = object.value(u"bottom_nav_bar"_q);
-	if (bottomNavBar.isBool()) {
-		_bottomNavBar = bottomNavBar.toBool();
-	}
-	const auto proxyChip = object.value(u"proxy_chip"_q);
-	if (proxyChip.isBool()) {
-		_proxyChip = proxyChip.toBool();
+	for (const auto &entry : Entries()) {
+		const auto value = object.value(QString::fromLatin1(entry.key));
+		if (value.isBool()) {
+			*_values.find(entry.flag)->second = value.toBool();
+		}
 	}
 }
 
@@ -98,8 +99,11 @@ void Settings::save() const {
 	QDir().mkpath(SettingsDir());
 	auto object = QJsonObject();
 	object.insert(u"version"_q, 1);
-	object.insert(u"bottom_nav_bar"_q, _bottomNavBar.current());
-	object.insert(u"proxy_chip"_q, _proxyChip.current());
+	for (const auto &entry : Entries()) {
+		object.insert(
+			QString::fromLatin1(entry.key),
+			_values.find(entry.flag)->second->current());
+	}
 
 	// QSaveFile writes to a temp file and renames it, so a crash while
 	// saving never leaves a half-written settings file.

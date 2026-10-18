@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "intro/intro_widget.h"
 
+#include "nexo/nexo_version.h"
+
 #include "intro/intro_phone.h"
 #include "intro/intro_qr.h"
 #include "intro/intro_code.h"
@@ -179,7 +181,7 @@ Widget::Widget(
 		}, lifetime());
 	}
 
-	_footer->setText(QString("Nexo Desk v%1").arg(currentVersionText()));
+	_footer->setText(QString("Nexo Desk v%1 (AyuGram %2)").arg(QString::fromLatin1(Nexo::kVersion), currentVersionText()));
 }
 
 rpl::producer<> Widget::showSettingsRequested() const {

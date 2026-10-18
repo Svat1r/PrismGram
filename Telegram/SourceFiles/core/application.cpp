@@ -110,7 +110,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 // AyuGram includes
 #include "ayu/ayu_infra.h"
+#include "nexo/nexo_features.h"
 #include "nexo/nexo_lang.h"
+#include "nexo/plugins/plugin_manager.h"
 #include "ayu/ayu_settings.h"
 #include "ayu/features/streamer_mode/streamer_mode.h"
 
@@ -346,6 +348,8 @@ void Application::run() {
 
 	AyuInfra::init();
 	Nexo::Lang::Init();
+	Nexo::Features::Init();
+	Nexo::Plugins::Manager::Instance().start();
 	style::StartManager(cScale());
 	Ui::Accessible::Init();
 	Ui::InitTextOptions();
@@ -1279,7 +1283,7 @@ bool Application::openInternalUrl(const QString &url, QVariant context) {
 }
 
 QString Application::changelogLink() const {
-	return u"https://github.com/AyuGram/AyuGramDesktop/releases"_q;
+	return u"https://github.com/Svat1r/NexoDesk/releases"_q;
 }
 
 bool Application::openCustomUrl(

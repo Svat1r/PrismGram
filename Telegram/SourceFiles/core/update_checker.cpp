@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/update_checker.h"
 
+#include "nexo/updates/nexo_updates.h"
+
 #include "platform/platform_specific.h"
 #include "base/platform/base_platform_info.h"
 #include "base/platform/base_platform_file_utilities.h"
@@ -677,7 +679,11 @@ QString ExtractFilename(const QString &url) {
 				tempDirPath,
 				version,
 				0,
-				canary ? verified->envelope.version : 0)) {
+				(canary
+					|| Updates::UpdateVersionCounter(
+						verified->envelope.version))
+					? verified->envelope.version
+					: 0)) {
 			return false;
 		}
 	}
@@ -716,18 +722,16 @@ bool UnpackUpdate(const QString &filepath) {
 	QByteArray compressed = input.readAll();
 	input.close();
 
-	if (false && Updates::IsV2UpdateFile(compressed)) {
-		if (UnpackUpdateV2(filepath, compressed)) {
-			return true;
-		} else if (BuildIsCanary) {
-			return false;
-		}
-		// A v1 file whose RSA signature happens to begin with the magic
-		// bytes lands here too, so a failed v2 parse falls through to the
-		// v1 path below: it accepts nothing without a valid RSA signature
-		// over these same bytes.
-		LOG(("Update Info: trying v1 unpacking for a file with v2 magic."));
-	} else if (BuildIsCanary) {
+	// Nexo Desk: only v2 packages signed through the Nexo manifest are
+	// accepted. The v1 path below trusts AyuGram's RSA key, so a v1
+	// package is never installed, even if correctly signed.
+	if (Updates::IsV2UpdateFile(compressed)) {
+		return UnpackUpdateV2(filepath, compressed);
+	} else {
+		LOG(("Update Error: Nexo Desk accepts only v2 updates."));
+		return false;
+	}
+	if (BuildIsCanary) {
 		// The channel policy lives in the v2 envelope only, a classical
 		// RSA package has no channel and would let any official v1 file
 		// posted to the canary channel jump a canary off its lane.
@@ -897,15 +901,34 @@ bool ParseCommonMap(
 			continue;
 		}
 		const auto isAvailableAlpha = (type == "alpha");
-		const auto availableVersion = [&] {
+		// Nexo Desk: "released" is "base:counter" (or a plain base), read
+		// as the full (base << 32) | counter update version.
+		const auto availableVersion = [&]() -> uint64 {
 			if ((*version).isString()) {
 				const auto string = (*version).toString();
 				if (const auto index = string.indexOf(':'); index > 0) {
-					return base::StringViewMid(string, 0, index).toULongLong();
+					const auto base = base::StringViewMid(
+						string,
+						0,
+						index).toULongLong();
+					const auto counter = base::StringViewMid(
+						string,
+						index + 1).toULongLong();
+					return isAvailableAlpha
+						? base
+						: Updates::MakeUpdateVersion(
+							quint32(base),
+							quint32(counter));
 				}
-				return string.toULongLong();
+				const auto plain = string.toULongLong();
+				return isAvailableAlpha
+					? plain
+					: Updates::MakeUpdateVersion(quint32(plain), 0);
 			} else if ((*version).isDouble()) {
-				return uint64(base::SafeRound((*version).toDouble()));
+				const auto plain = uint64(base::SafeRound((*version).toDouble()));
+				return isAvailableAlpha
+					? plain
+					: Updates::MakeUpdateVersion(quint32(plain), 0);
 			}
 			return 0ULL;
 		}();
@@ -914,12 +937,9 @@ bool ParseCommonMap(
 				).arg(platform).arg(type).arg(key));
 			return false;
 		}
-		const auto compare = isAvailableAlpha
-			? availableVersion
-			: availableVersion * 1000;
-		const auto bestCompare = bestIsAvailableAlpha
-			? bestAvailableVersion
-			: bestAvailableVersion * 1000;
+		// Full stable versions are far above alpha versions already.
+		const auto compare = availableVersion;
+		const auto bestCompare = bestAvailableVersion;
 		if (compare > bestCompare) {
 			bestAvailableVersion = availableVersion;
 			bestIsAvailableAlpha = isAvailableAlpha;
@@ -1079,6 +1099,9 @@ std::optional<QString> HttpChecker::parseResponse(
 			return false;
 		}
 		bestLink = (*link).toString();
+		// Nexo Desk: lets Settings warn about plugin API changes.
+		Nexo::Updates::SetFeedPluginApi(
+			map.value(u"plugin_api"_q).toInt());
 		return true;
 	};
 	const auto result = ParseCommonMap(response, testing(), accumulate);
@@ -1097,7 +1120,7 @@ QString HttpChecker::validateLatestUrl(
 		QString url) const {
 	const auto myVersion = isAvailableAlpha
 		? cAlphaVersion()
-		: uint64(AppVersion);
+		: RunningUpdateVersion();
 	const auto validVersion = (cAlphaVersion() || !isAvailableAlpha);
 	if (!validVersion || availableVersion <= myVersion) {
 		return QString();
@@ -1362,7 +1385,7 @@ auto MtpChecker::parseText(const QByteArray &text) const
 auto MtpChecker::validateLatestLocation(
 		uint64 availableVersion,
 		const FileLocation &location) const -> FileLocation {
-	const auto myVersion = uint64(AppVersion);
+	const auto myVersion = RunningUpdateVersion();
 	return (availableVersion <= myVersion) ? FileLocation() : location;
 }
 
@@ -2258,7 +2281,7 @@ bool checkReadyUpdate() {
 				ClearAll();
 				return false;
 			}
-			if (!BuildIsCanary || canaryVersion <= RunningUpdateVersion()) {
+			if (canaryVersion <= RunningUpdateVersion()) {
 				LOG(("Update Error: cant install canary version %1 having version %2").arg(canaryVersion).arg(RunningUpdateVersion()));
 				ClearAll();
 				return false;

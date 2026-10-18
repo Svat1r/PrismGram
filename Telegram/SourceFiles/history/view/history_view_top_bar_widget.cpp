@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
 
+#include "nexo/nexo_settings.h"
+
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
 #include "boxes/add_contact_box.h"
@@ -83,6 +85,14 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace HistoryView {
 namespace {
+
+// Nexo Desk: offset that centers content of the given width.
+[[nodiscard]] int NexoCenteredShift(int contentWidth, int available) {
+	if (!Nexo::Settings::Instance().get(Nexo::Flag::CenteredTitle)) {
+		return 0;
+	}
+	return std::max(0, (available - contentWidth) / 2);
+}
 
 constexpr auto kEmojiInteractionSeenDuration = 3 * crl::time(1000);
 
@@ -694,6 +704,13 @@ void TopBarWidget::paintTopBar(Painter &p) {
 				TopBarNameText(namePeer, _activeChat),
 				Ui::NameTextOptions());
 		}
+		// Nexo Desk: optional centered title.
+		if (const auto shift = NexoCenteredShift(
+				_title.maxWidth(),
+				namewidth)) {
+			nameleft += shift;
+			namewidth -= shift;
+		}
 		if (const auto info = namePeer->botVerifyDetails()) {
 			if (!_titleBadge.ready(info)) {
 				_titleBadge.set(
@@ -738,6 +755,12 @@ void TopBarWidget::paintTopBar(Painter &p) {
 			.elisionLines = 1,
 		});
 
+		if (const auto shift = NexoCenteredShift(
+				_titlePeerText.maxWidth(),
+				statuswidth)) {
+			statusleft += shift;
+			statuswidth -= shift;
+		}
 		p.setFont(st::dialogsTextFont);
 		if (!paintConnectingState(p, statusleft, statustop, width())
 			&& !paintSendAction(

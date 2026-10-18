@@ -206,7 +206,7 @@ bool update() {
 					writeLog(L"Error: bad update, has Updater.exe! '" + tofname + L"' equal '" + updaterName + L"'");
 					delFolder();
 					return false;
-				} else if (equal(tofname, updateTo + L"AyuGram.exe") && exeName != L"AyuGram.exe") {
+				} else if (equal(tofname, updateTo + L"NexoDesk.exe") && exeName != L"NexoDesk.exe") {
 					wstring fullBinaryPath = updateTo + exeName;
 					writeLog(L"Target binary found: '" + tofname + L"', changing to '" + fullBinaryPath + L"'");
 					tofname = fullBinaryPath;
@@ -245,6 +245,41 @@ bool update() {
 		}
 	}
 
+	// Nexo Desk: back up every file before replacing it. A failed copy
+	// restores the backups, a finished update keeps them in
+	// tupdates\previous so the user can go back to the previous version.
+	const wstring backupDir = L"tupdates\\backup";
+	const wstring previousDir = L"tupdates\\previous";
+	fullClearPath(backupDir);
+	CreateDirectory(L"tupdates", NULL);
+	CreateDirectory(backupDir.c_str(), NULL);
+	deque<wstring> backups; // Empty string: the file did not exist.
+	for (size_t i = 0; i < to.size(); ++i) {
+		const wstring backup = backupDir + L"\\" + std::to_wstring(i) + L".bak";
+		if (GetFileAttributes(to[i].c_str()) == INVALID_FILE_ATTRIBUTES) {
+			backups.push_back(wstring());
+		} else if (CopyFile(to[i].c_str(), backup.c_str(), FALSE)) {
+			backups.push_back(backup);
+		} else {
+			DWORD errorCode = GetLastError();
+			writeLog(L"Error: failed to back up '" + to[i] + L"', update cancelled.");
+			updateError(L"Failed to back up a file", errorCode);
+			fullClearPath(backupDir);
+			delFolder();
+			return false;
+		}
+	}
+	const auto restoreBackups = [&](size_t count) {
+		for (size_t j = 0; j < count; ++j) {
+			if (backups[j].empty()) {
+				DeleteFile(to[j].c_str());
+			} else if (!CopyFile(backups[j].c_str(), to[j].c_str(), FALSE)) {
+				writeLog(L"Error: could not restore '" + to[j] + L"'");
+			}
+		}
+		writeLog(L"Restored the previous files.");
+	};
+
 	for (size_t i = 0; i < from.size(); ++i) {
 		wstring fname = from[i], tofname = to[i];
 		BOOL copyResult;
@@ -263,8 +298,10 @@ bool update() {
 			if (!copyResult) {
 				writeLog(L"Error: failed to copy, asking to retry..");
 				WCHAR errMsg[2048];
-				wsprintf(errMsg, L"Failed to update Telegram :(\n%s is not accessible.", tofname.c_str());
+				wsprintf(errMsg, L"Failed to update Nexo Desk :(\n%s is not accessible.", tofname.c_str());
 				if (MessageBox(0, errMsg, L"Update error!", MB_ICONERROR | MB_RETRYCANCEL) != IDRETRY) {
+					restoreBackups(i + 1);
+					fullClearPath(backupDir);
 					delFolder();
 					return false;
 				}
@@ -272,17 +309,84 @@ bool update() {
 		} while (!copyResult);
 	}
 
+	// Nexo Desk: keep the replaced files as the previous version.
+	{
+		wstring list;
+		// Backup paths as they will be after the folder is renamed.
+		for (size_t i = 0; i < to.size(); ++i) {
+			const wstring kept = backups[i].empty()
+				? wstring()
+				: previousDir + backups[i].substr(backupDir.size());
+			list += to[i] + L"|" + kept + L"\n";
+		}
+		const wstring listPath = backupDir + L"\\files.txt";
+		HANDLE listFile = CreateFile(listPath.c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+		if (listFile != INVALID_HANDLE_VALUE) {
+			DWORD written = 0;
+			WriteFile(listFile, list.c_str(), DWORD(list.size() * sizeof(wchar_t)), &written, 0);
+			CloseHandle(listFile);
+		}
+		fullClearPath(previousDir);
+		if (!MoveFile(backupDir.c_str(), previousDir.c_str())) {
+			writeLog(L"Could not keep the previous version.");
+			fullClearPath(backupDir);
+		}
+	}
+
 	writeLog(L"Update succeed! Clearing folder..");
 	delFolder();
 	return true;
 }
+
+// Nexo Desk: "-rollback" puts back the files saved by the last update.
+bool rollbackUpdate() {
+	const wstring listPath = L"tupdates\\previous\\files.txt";
+	HANDLE listFile = CreateFile(listPath.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (listFile == INVALID_HANDLE_VALUE) {
+		writeLog(L"Rollback: no previous version.");
+		return false;
+	}
+	LARGE_INTEGER size;
+	if (!GetFileSizeEx(listFile, &size) || size.QuadPart > 1024 * 1024) {
+		CloseHandle(listFile);
+		return false;
+	}
+	wstring list(size_t(size.QuadPart / sizeof(wchar_t)), L'\0');
+	DWORD read = 0;
+	ReadFile(listFile, &list[0], DWORD(size.QuadPart), &read, 0);
+	CloseHandle(listFile);
+	bool ok = true;
+	size_t start = 0;
+	while (start < list.size()) {
+		size_t end = list.find(L'\n', start);
+		if (end == wstring::npos) end = list.size();
+		const wstring line = list.substr(start, end - start);
+		start = end + 1;
+		const size_t bar = line.find(L'|');
+		if (bar == wstring::npos) continue;
+		const wstring target = line.substr(0, bar), backup = line.substr(bar + 1);
+		if (target.empty()) continue;
+		writeLog(L"Rollback: restoring '" + target + L"'");
+		if (backup.empty()) {
+			DeleteFile(target.c_str());
+		} else if (!CopyFile(backup.c_str(), target.c_str(), FALSE)) {
+			writeLog(L"Error: rollback could not restore '" + target + L"'");
+			ok = false;
+		}
+	}
+	if (ok) {
+		fullClearPath(L"tupdates\\previous");
+	}
+	return ok;
+}
+
 
 void updateRegistry() {
 	if (versionNum && versionNum != 0x7FFFFFFF && versionNum != 0x7FFFFFFE) {
 		writeLog(L"Updating registry..");
 		versionStr[versionLen / 2] = 0;
 		HKEY rkey;
-		LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{53F49750-6209-4FBF-9CA8-7A333C87D1ED}_is1", 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &rkey);
+		LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B72EFDDC-98AA-48C4-A7A6-E8BEFBE62C02}_is1", 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &rkey);
 		if (status == ERROR_SUCCESS) {
 			writeLog(L"Checking registry install location..");
 			static const int bufSize = 4096;
@@ -345,13 +449,15 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 	LPWSTR *args;
 	int argsCount;
 
-	bool needupdate = false, autostart = false, debug = false, writeprotected = false, startintray = false;
+	bool needupdate = false, autostart = false, debug = false, writeprotected = false, startintray = false, rollback = false;
 	args = CommandLineToArgvW(GetCommandLine(), &argsCount);
 	if (args) {
 		for (int i = 1; i < argsCount; ++i) {
 			writeLog(std::wstring(L"Argument: ") + args[i]);
 			if (equal(args[i], L"-update")) {
 				needupdate = true;
+			} else if (equal(args[i], L"-rollback")) {
+				rollback = true;
 			} else if (equal(args[i], L"-autostart")) {
 				autostart = true;
 			} else if (equal(args[i], L"-debug")) {
@@ -379,14 +485,14 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				exeName = args[i];
 				for (int j = 0, l = exeName.size(); j < l; ++j) {
 					if (exeName[j] == L'/' || exeName[j] == L'\\') {
-						exeName = L"AyuGram.exe";
+						exeName = L"NexoDesk.exe";
 						break;
 					}
 				}
 			}
 		}
 		if (exeName.empty()) {
-			exeName = L"AyuGram.exe";
+			exeName = L"NexoDesk.exe";
 		}
 		if (needupdate) writeLog(L"Need to update!");
 		if (autostart) writeLog(L"From autostart!");
@@ -403,7 +509,9 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 					updateTo = updaterDir;
 				}
 				writeLog(L"Update to: " + updateTo);
-				if (needupdate && update()) {
+				if (rollback) {
+					rollbackUpdate();
+				} else if (needupdate && update()) {
 					updateRegistry();
 				}
 				if (writeprotected) { // if we can't clear all tupdates\ready (Updater.exe is there) - clear only version

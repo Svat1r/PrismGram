@@ -10,6 +10,8 @@
 #include "ayu/ui/settings/settings_appearance.h"
 #include "nexo/nexo_settings.h"
 #include "nexo/ui/theme_picker.h"
+#include "base/options.h"
+#include "ui/widgets/discrete_sliders.h"
 #include "settings/settings_builder.h"
 #include "settings/sections/settings_chat.h"
 #include "settings/sections/settings_main.h"
@@ -40,42 +42,112 @@ void BuildNexoThemes(SectionBuilder &builder) {
 	builder.addDividerText(tr::nexo_appearance_nexo_themes_about());
 }
 
-void BuildNavigation(SectionBuilder &builder) {
+void AddFlagToggle(
+		SectionBuilder &builder,
+		const QString &id,
+		rpl::producer<QString> title,
+		Nexo::Flag flag,
+		QStringList keywords) {
 	auto &settings = Nexo::Settings::Instance();
-
-	builder.addSkip();
 	const auto button = builder.addButton({
-		.id = u"nexo/appearance/bottom_nav"_q,
-		.title = tr::nexo_appearance_bottom_nav(),
+		.id = id,
+		.title = std::move(title),
 		.st = &st::settingsButtonNoIcon,
-		.toggled = rpl::single(settings.bottomNavBar()),
-		.keywords = { u"bottom"_q, u"navigation"_q, u"panel"_q, u"bar"_q },
+		.toggled = rpl::single(settings.get(flag)),
+		.keywords = std::move(keywords),
 	});
 	if (button) {
 		button->toggledChanges(
 		) | rpl::on_next([=, &settings](bool enabled) {
-			settings.setBottomNavBar(enabled);
+			settings.set(flag, enabled);
 		}, button->lifetime());
 	}
+}
+
+void BuildNavigation(SectionBuilder &builder) {
+	builder.addSkip();
+	AddFlagToggle(
+		builder,
+		u"nexo/appearance/bottom_nav"_q,
+		tr::nexo_appearance_bottom_nav(),
+		Nexo::Flag::BottomNavBar,
+		{ u"bottom"_q, u"navigation"_q, u"panel"_q, u"bar"_q });
 	builder.addSkip();
 	builder.addDividerText(tr::nexo_appearance_bottom_nav_about());
 
 	builder.addSkip();
-	const auto chip = builder.addButton({
-		.id = u"nexo/appearance/proxy_chip"_q,
-		.title = tr::nexo_appearance_proxy_chip(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = rpl::single(settings.proxyChip()),
-		.keywords = { u"proxy"_q, u"search"_q, u"chip"_q },
-	});
-	if (chip) {
-		chip->toggledChanges(
-		) | rpl::on_next([=, &settings](bool enabled) {
-			settings.setProxyChip(enabled);
-		}, chip->lifetime());
-	}
+	AddFlagToggle(
+		builder,
+		u"nexo/appearance/proxy_chip"_q,
+		tr::nexo_appearance_proxy_chip(),
+		Nexo::Flag::ProxyChip,
+		{ u"proxy"_q, u"search"_q, u"chip"_q });
 	builder.addSkip();
 	builder.addDividerText(tr::nexo_appearance_proxy_chip_about());
+}
+
+void BuildChats(SectionBuilder &builder) {
+	builder.addSkip();
+	builder.addSubsectionTitle({
+		.id = u"nexo/appearance/chats"_q,
+		.title = tr::nexo_appearance_chats(),
+		.keywords = { u"chat"_q, u"messages"_q },
+	});
+	AddFlagToggle(
+		builder,
+		u"nexo/appearance/centered_title"_q,
+		tr::nexo_appearance_centered_title(),
+		Nexo::Flag::CenteredTitle,
+		{ u"title"_q, u"center"_q, u"header"_q });
+	AddFlagToggle(
+		builder,
+		u"nexo/appearance/no_rounding"_q,
+		tr::nexo_appearance_no_rounding(),
+		Nexo::Flag::NoNumberRounding,
+		{ u"numbers"_q, u"rounding"_q, u"views"_q, u"subscribers"_q });
+	AddFlagToggle(
+		builder,
+		u"nexo/appearance/mention_comma"_q,
+		tr::nexo_appearance_mention_comma(),
+		Nexo::Flag::CommaAfterMention,
+		{ u"mention"_q, u"comma"_q });
+	builder.addSkip();
+	builder.addDividerText(tr::nexo_appearance_chats_about());
+
+	builder.addSkip();
+	builder.addSubsectionTitle({
+		.id = u"nexo/appearance/sticker_size"_q,
+		.title = tr::nexo_appearance_sticker_size(),
+		.keywords = { u"sticker"_q, u"size"_q },
+	});
+	builder.add([](const WidgetContext &ctx) {
+		// Uses the base client's "sticker-size" option (0 = default size).
+		static const auto kSizes = std::array{ 0, 192, 144, 112 };
+		auto slider = object_ptr<Ui::SettingsSlider>(
+			ctx.container,
+			st::settingsSlider);
+		const auto raw = slider.data();
+		raw->addSection(tr::nexo_appearance_sticker_default(tr::now));
+		raw->addSection(tr::nexo_appearance_sticker_medium(tr::now));
+		raw->addSection(tr::nexo_appearance_sticker_small(tr::now));
+		raw->addSection(tr::nexo_appearance_sticker_tiny(tr::now));
+		auto &option = base::options::lookup<int>("sticker-size");
+		const auto i = ranges::find(kSizes, option.value());
+		raw->setActiveSectionFast((i != end(kSizes))
+			? int(i - begin(kSizes))
+			: 0);
+		raw->sectionActivated(
+		) | rpl::on_next([](int index) {
+			base::options::lookup<int>("sticker-size").set(kSizes[index]);
+		}, raw->lifetime());
+		const auto &padding = st::settingsButtonNoIcon.padding;
+		return SectionBuilder::WidgetToAdd{
+			.widget = std::move(slider),
+			.margin = { padding.left(), 0, padding.right(), 0 },
+		};
+	});
+	builder.addSkip();
+	builder.addDividerText(tr::nexo_appearance_sticker_about());
 }
 
 void BuildThemes(SectionBuilder &builder) {
@@ -107,6 +179,7 @@ const auto kMeta = BuildHelper({
 }, [](SectionBuilder &builder) {
 	BuildNexoThemes(builder);
 	BuildNavigation(builder);
+	BuildChats(builder);
 	BuildThemes(builder);
 });
 

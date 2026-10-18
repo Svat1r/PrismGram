@@ -34,6 +34,7 @@ include(cmake/lib_stripe.cmake)
 include(cmake/lib_tgcalls.cmake)
 include(cmake/lib_prisma.cmake)
 include(cmake/lib_fido2.cmake)
+include(cmake/lib_quickjs.cmake)
 include(cmake/td_export.cmake)
 include(cmake/td_iv.cmake)
 include(cmake/td_lang.cmake)
@@ -102,6 +103,7 @@ PRIVATE
     desktop-app::external_openssl
     desktop-app::external_openal
     desktop-app::external_xxhash
+    desktop-app::lib_quickjs
 
     # AyuGram filters
     ayugram::lib_icu
@@ -177,6 +179,27 @@ set(ayugram_files
         nexo/ui/theme_picker.h
         nexo/themes/nexo_themes.cpp
         nexo/themes/nexo_themes.h
+        nexo/nexo_version.h
+        nexo/nexo_features.cpp
+        nexo/nexo_features.h
+        nexo/nexo_zip.cpp
+        nexo/nexo_zip.h
+        nexo/backup/settings_backup.cpp
+        nexo/backup/settings_backup.h
+        nexo/updates/nexo_updates.cpp
+        nexo/updates/nexo_updates.h
+        nexo/settings/settings_client.cpp
+        nexo/settings/settings_client.h
+        nexo/plugins/plugin_manager.cpp
+        nexo/plugins/plugin_manager.h
+        nexo/plugins/plugin_manifest.cpp
+        nexo/plugins/plugin_manifest.h
+        nexo/plugins/plugin_menu.cpp
+        nexo/plugins/plugin_menu.h
+        nexo/plugins/plugin_runtime.cpp
+        nexo/plugins/plugin_runtime.h
+        nexo/settings/settings_plugins.cpp
+        nexo/settings/settings_plugins.h
         nexo/connection/nexo_proxy_tools.cpp
         nexo/settings/settings_connection.cpp
         nexo/settings/settings_connection.h
@@ -2770,7 +2793,8 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
         )
     endif()
 
-    if (DESKTOP_APP_SPECIAL_TARGET)
+    # Nexo Desk: the packer signs Nexo updates, build it with auto-update.
+    if (DESKTOP_APP_SPECIAL_TARGET OR NOT DESKTOP_APP_DISABLE_AUTOUPDATE)
         add_executable(Packer)
         init_target(Packer)
 
@@ -2785,6 +2809,10 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
         )
 
         target_include_directories(Packer PRIVATE ${src_loc})
+        if (NOT DESKTOP_APP_SPECIAL_TARGET)
+            # Nexo Desk: v2 packages only, no Telegram v1 RSA keys.
+            target_compile_definitions(Packer PRIVATE PACKER_DISABLE_PRIVATE)
+        endif()
 
         target_link_libraries(Packer
         PRIVATE

@@ -365,8 +365,15 @@ void start() {
 #if (!defined Q_OS_WIN && !defined _DEBUG) || defined Q_OS_WINRT || defined OS_WIN_STORE || defined OS_MAC_STORE
 		cForceWorkingDir(psAppDataPath());
 #else // (!Q_OS_WIN && !_DEBUG) || Q_OS_WINRT || OS_WIN_STORE || OS_MAC_STORE
-		cForceWorkingDir(cExeDir());
-		if (!LogsData->openMain()) {
+		// Nexo Desk: keep user data apart from the install folder. Use the
+		// exe folder only for portable copies that already have tdata
+		// there; otherwise always the %APPDATA% folder.
+		if (QDir(cExeDir() + u"tdata"_q).exists()) {
+			cForceWorkingDir(cExeDir());
+			if (!LogsData->openMain()) {
+				cForceWorkingDir(psAppDataPath());
+			}
+		} else {
 			cForceWorkingDir(psAppDataPath());
 		}
 #endif // (!Q_OS_WIN && !_DEBUG) || Q_OS_WINRT || OS_WIN_STORE || OS_MAC_STORE

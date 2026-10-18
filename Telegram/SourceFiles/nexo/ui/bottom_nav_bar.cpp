@@ -6,6 +6,12 @@
 #include "boxes/peer_list_controllers.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
+#include "dialogs/dialogs_entry.h"
+#include "dialogs/dialogs_main_list.h"
+#include "info/info_controller.h"
+#include "info/info_section_widget.h"
+#include "info/info_wrap_widget.h"
+#include "mainwidget.h"
 #include "main/main_session.h"
 #include "ui/painter.h"
 #include "window/window_session_controller.h"
@@ -17,11 +23,12 @@ namespace {
 
 // Background of the highlighted (current) item, over the accent color.
 constexpr auto kActiveAlpha = 0.14;
-// The bar lives in the chat list, so "Chats" is always the current item.
-constexpr auto kActiveIndex = 0;
+constexpr auto kChatsIndex = 0;
+constexpr auto kSettingsIndex = 2;
+constexpr auto kProfileIndex = 3;
 
 [[nodiscard]] QString BadgeText(int count) {
-	return (count > 9999) ? u"9999+"_q : QString::number(count);
+	return (count > 999) ? u"999+"_q : QString::number(count);
 }
 
 } // namespace
@@ -61,6 +68,14 @@ BottomNavBar::BottomNavBar(
 		update();
 	}, lifetime());
 
+	// MainWidget may still be constructing when the chat list creates us.
+	crl::on_main(this, [=] {
+		_controller->content()->mainSectionChanges(
+		) | rpl::on_next([=] {
+			update();
+		}, lifetime());
+	});
+
 	resize(
 		width(),
 		st::nexoNavBarMargin.top()
@@ -99,6 +114,23 @@ void BottomNavBar::setOver(int index) {
 	update();
 }
 
+int BottomNavBar::activeIndex() const {
+	const auto section = _controller->content()->mainSection();
+	const auto wrap = section
+		? section->findChild<Info::WrapWidget*>()
+		: nullptr;
+	if (!wrap) {
+		return kChatsIndex;
+	}
+	const auto key = wrap->key();
+	if (key.settingsSelf()) {
+		return kSettingsIndex;
+	} else if (key.peer() == _controller->session().user().get()) {
+		return kProfileIndex;
+	}
+	return kChatsIndex;
+}
+
 void BottomNavBar::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
 	auto hq = PainterHighQualityEnabler(p);
@@ -115,10 +147,11 @@ void BottomNavBar::paintEvent(QPaintEvent *e) {
 	auto activeBg = accent;
 	activeBg.setAlphaF(kActiveAlpha);
 
+	const auto activeIndex = this->activeIndex();
 	for (auto i = 0; i != int(_items.size()); ++i) {
 		const auto &item = _items[i];
 		const auto rect = itemRect(i);
-		const auto active = (i == kActiveIndex);
+		const auto active = (i == activeIndex);
 		if (active || i == _over) {
 			p.setPen(Qt::NoPen);
 			p.setBrush(active ? QBrush(activeBg) : st::windowBgRipple->b);
@@ -145,15 +178,19 @@ void BottomNavBar::paintEvent(QPaintEvent *e) {
 			rect.y() + rect.height() - st::nexoNavLabelBottom - font->descent,
 			text);
 
-		if (i == kActiveIndex) {
+		if (i == kChatsIndex) {
 			paintBadge(p, rect);
 		}
 	}
 }
 
 void BottomNavBar::paintBadge(QPainter &p, const QRect &item) {
-	const auto &data = _controller->session().data();
-	const auto count = data.unreadBadge();
+	// Same rule as the folder counters: unread chats, muted ones only
+	// when "count muted chats" is on.
+	const auto badges = Dialogs::BadgesForUnread(
+		_controller->session().data().chatsList()->unreadState(),
+		Dialogs::CountInBadge::Chats);
+	const auto count = badges.unreadCounter;
 	if (count <= 0) {
 		return;
 	}
@@ -170,7 +207,7 @@ void BottomNavBar::paintBadge(QPainter &p, const QRect &item) {
 	const auto badge = QRect(left, top, width, height);
 
 	p.setPen(Qt::NoPen);
-	p.setBrush(data.unreadBadgeMuted()
+	p.setBrush(badges.unreadMuted
 		? st::dialogsUnreadBgMuted
 		: st::dialogsUnreadBg);
 	p.drawRoundedRect(badge, height / 2., height / 2.);

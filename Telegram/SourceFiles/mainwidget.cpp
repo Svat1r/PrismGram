@@ -1687,6 +1687,7 @@ void MainWidget::showHistory(
 	auto noPeer = !_history->peer();
 	auto onlyDialogs = noPeer && isOneColumn();
 	_mainSection.destroy();
+	_mainSectionChanges.fire({});
 
 	updateMainSectionShown();
 	updateControlsGeometry();
@@ -2104,6 +2105,7 @@ void MainWidget::showNewSection(
 		updateControlsGeometry();
 	} else {
 		_mainSection = std::move(newMainSection);
+		_mainSectionChanges.fire({});
 		_history->finishAnimating();
 		_history->showHistory(PeerId(), MsgId());
 
@@ -2148,6 +2150,7 @@ void MainWidget::checkMainSectionToLayer() {
 	Ui::FocusPersister persister(this);
 	if (auto layer = _mainSection->moveContentToLayer(rect())) {
 		_mainSection.destroy();
+		_mainSectionChanges.fire({});
 		_controller->showBackFromStack(
 			SectionShow(
 				anim::type::instant,
@@ -2661,6 +2664,10 @@ void MainWidget::showAll() {
 
 void MainWidget::resizeEvent(QResizeEvent *e) {
 	updateControlsGeometry();
+}
+
+Window::SectionWidget *MainWidget::mainSection() const {
+	return _mainSection.data();
 }
 
 void MainWidget::updateMainSectionShown() {

@@ -105,6 +105,12 @@ class MainWidget final
 	: public Ui::RpWidget
 	, private Media::Player::FloatDelegate {
 public:
+	// Nexo Desk: lets the bottom navigation follow the shown section.
+	[[nodiscard]] rpl::producer<> mainSectionChanges() const {
+		return _mainSectionChanges.events();
+	}
+	[[nodiscard]] Window::SectionWidget *mainSection() const;
+
 	using SectionShow = Window::SectionShow;
 
 	MainWidget(
@@ -231,6 +237,8 @@ public:
 	void toggleFiltersMenu(bool value) const;
 
 private:
+	rpl::event_stream<> _mainSectionChanges;
+
 	void paintEvent(QPaintEvent *e) override;
 	void resizeEvent(QResizeEvent *e) override;
 	bool eventFilter(QObject *o, QEvent *e) override;

@@ -33,6 +33,7 @@ private:
 		QString text;
 	};
 
+	[[nodiscard]] int activeIndex() const;
 	[[nodiscard]] QRect pillRect() const;
 	[[nodiscard]] QRect itemRect(int index) const;
 	[[nodiscard]] int itemAt(QPoint point) const;

@@ -17,6 +17,7 @@
 #include "main/main_session.h"
 #include "mainwindow.h"
 #include "mtproto/facade.h"
+#include "nexo/nexo_settings.h"
 #include "settings/settings_builder.h"
 #include "settings/sections/settings_main.h"
 #include "storage/localstorage.h"
@@ -330,6 +331,31 @@ void BuildAutoSwitch(SectionBuilder &builder) {
 	builder.addDividerText(tr::lng_proxy_auto_switch_about());
 }
 
+void BuildExperimental(SectionBuilder &builder) {
+	auto &settings = Nexo::Settings::Instance();
+	builder.addSkip();
+	builder.addSubsectionTitle({
+		.id = u"nexo/connection/experimental"_q,
+		.title = tr::nexo_connection_experimental(),
+		.keywords = { u"experimental"_q, u"speed"_q },
+	});
+	const auto button = builder.addButton({
+		.id = u"nexo/connection/speed_boost"_q,
+		.title = tr::nexo_connection_speed_boost(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = rpl::single(settings.get(Nexo::Flag::SpeedBoost)),
+		.keywords = { u"speed"_q, u"download"_q, u"upload"_q, u"boost"_q },
+	});
+	if (button) {
+		button->toggledChanges(
+		) | rpl::on_next([=, &settings](bool enabled) {
+			settings.set(Nexo::Flag::SpeedBoost, enabled);
+		}, button->lifetime());
+	}
+	builder.addSkip();
+	builder.addDividerText(tr::nexo_connection_speed_boost_about());
+}
+
 const auto kMeta = BuildHelper({
 	.id = NexoConnection::Id(),
 	.parentId = MainId(),
@@ -340,6 +366,7 @@ const auto kMeta = BuildHelper({
 	BuildImport(builder);
 	BuildChecks(builder);
 	BuildAutoSwitch(builder);
+	BuildExperimental(builder);
 });
 
 } // namespace

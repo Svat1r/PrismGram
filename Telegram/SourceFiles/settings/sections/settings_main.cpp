@@ -95,7 +95,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/ui/utils/ayu_profile_values.h"
 #include "ayu/utils/telegram_helpers.h"
 #include "nexo/settings/settings_appearance.h"
+#include "nexo/settings/settings_client.h"
 #include "nexo/settings/settings_connection.h"
+#include "nexo/settings/settings_plugins.h"
 
 
 namespace Settings {
@@ -399,10 +401,22 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.keywords = { u"ayu"_q },
 	});
 	builder.addSectionButton({
+		.title = tr::nexo_client_title(),
+		.targetSection = NexoClientId(),
+		.icon = { &st::menuIconInfo },
+		.keywords = { u"nexo"_q, u"update"_q, u"backup"_q, u"version"_q },
+	});
+	builder.addSectionButton({
 		.title = tr::nexo_appearance_title(),
 		.targetSection = NexoAppearanceId(),
 		.icon = { &st::menuIconPalette },
 		.keywords = { u"theme"_q, u"appearance"_q, u"panel"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::nexo_plugins_title(),
+		.targetSection = NexoPluginsId(),
+		.icon = { &st::menuIconCustomize },
+		.keywords = { u"plugins"_q, u"extensions"_q, u"quickjs"_q },
 	});
 	builder.addSectionButton({
 		.title = tr::nexo_connection_title(),

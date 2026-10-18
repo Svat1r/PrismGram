@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/field_autocomplete.h"
 
+#include "nexo/nexo_features.h"
+
 #include "api/api_chat_participants.h"
 #include "api/api_common.h"
 #include "apiwrap.h"
@@ -2016,11 +2018,14 @@ void InitFieldAutocomplete(
 		const auto ctrlClick = base::IsCtrlPressed()
 			&& data.method == FieldAutocomplete::ChooseMethod::ByClick;
 		if (data.mention.isEmpty() || ctrlClick) {
-			field->insertTag(
-				user->firstName.isEmpty() ? user->name() : user->firstName,
-				PrepareMentionTag(user));
+			const auto name = user->firstName.isEmpty()
+				? user->name()
+				: user->firstName;
+			field->insertTag(name, PrepareMentionTag(user));
+			Nexo::Features::AfterMentionInserted(field, name);
 		} else {
 			field->insertTag('@' + data.mention);
+			Nexo::Features::AfterMentionInserted(field, '@' + data.mention);
 		}
 	}, raw->lifetime());
 

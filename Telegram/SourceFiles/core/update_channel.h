@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "core/update_verify.h"
 #include "core/version.h"
+#include "nexo/nexo_version.h"
 
 #include <QtCore/QString>
 
@@ -66,9 +67,12 @@ inline constexpr auto CanaryMetadataMessageId
 	= int(TDESKTOP_CANARY_METADATA_MSG_ID);
 
 [[nodiscard]] inline constexpr quint64 RunningUpdateVersion() {
+	// Nexo Desk: stable builds carry the Nexo release counter.
 	return Updates::MakeUpdateVersion(
 		quint32(AppVersion),
-		CanaryBuildCounter);
+		BuildIsCanary
+			? quint32(CanaryBuildCounter)
+			: quint32(Nexo::kUpdateCounter));
 }
 
 [[nodiscard]] inline QString CanaryVersionSuffix() {

@@ -188,8 +188,12 @@ void AppendLeU64(QByteArray &to, quint64 value) {
 // suffix the installers and portable archives carry after their version.
 [[nodiscard]] QString V2NameSuffix(Channel channel, quint32 counter) {
 	switch (channel) {
-	case Channel::Stable: return QString();
-	case Channel::Beta: return QString("-beta");
+	case Channel::Stable:
+		return counter ? QString("-nexo%1").arg(counter) : QString();
+	case Channel::Beta:
+		return counter
+			? QString("-beta-nexo%1").arg(counter)
+			: QString("-beta");
 	case Channel::CanaryPublic: return QString("-canary-%1").arg(counter);
 	case Channel::CanaryPrivate:
 		return QString("-canary-%1-private").arg(counter);
@@ -678,8 +682,9 @@ int main(int argc, char *argv[])
 		} else if (V2KeysLoc.isEmpty()) {
 			cout << "The -keys-loc param is required for -channel packing!\n";
 			return -1;
-		} else if (canary != (V2Counter > 0)) {
-			cout << "Canary channels require a positive -counter, others require none!\n";
+		} else if (canary && !V2Counter) {
+			// Nexo Desk: stable and beta may carry the Nexo counter too.
+			cout << "Canary channels require a positive -counter!\n";
 			return -1;
 		} else if (!V2EmbedSignatures.empty()) {
 			cout << "The -embed-signatures param requires -unsigned!\n";

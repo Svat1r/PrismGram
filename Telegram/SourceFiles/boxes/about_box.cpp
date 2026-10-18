@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/about_box.h"
 
+#include "nexo/nexo_version.h"
+
 #include "base/platform/base_platform_info.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
@@ -49,7 +51,7 @@ rpl::producer<TextWithEntities> Text() {
 		lt_github_link,
 		rpl::single(Ui::Text::Link(
 			"GitHub",
-			"https://github.com/AyuGram/AyuGramDesktop")),
+			"https://github.com/Svat1r/NexoDesk")),
 		tr::marked);
 }
 
@@ -66,7 +68,7 @@ void AboutBox(not_null<Ui::GenericBox*> box, Window::SessionController* controll
 			tr::lng_about_version(
 				tr::now,
 				lt_version,
-				currentVersionText()),
+				QString::fromLatin1(Nexo::kVersion)),
 			st::aboutVersionLink),
 		QMargins(
 			st::boxRowPadding.left(),
@@ -87,18 +89,23 @@ void AboutBox(not_null<Ui::GenericBox*> box, Window::SessionController* controll
 		Ui::AddSkip(layout, st::aboutSkip);
 	};
 
+	// Nexo Desk: own version, base version and plugin API version.
+	addText(tr::nexo_about_based(
+		lt_base,
+		rpl::single(Ui::Text::Link(
+			QString::fromLatin1(Nexo::kBaseName),
+			u"https://github.com/AyuGram/AyuGramDesktop"_q)),
+		lt_version,
+		rpl::single(TextWithEntities{ currentVersionText() }),
+		tr::marked));
+	addText(tr::nexo_about_plugin_api(
+		lt_version,
+		rpl::single(TextWithEntities{
+			QString::number(Nexo::kPluginApiVersion) }),
+		tr::marked));
 	addText(Text());
 
 	box->addButton(tr::lng_close(), [=] { box->closeBox(); });
-	box->addLeftButton(
-		rpl::single(QString("@AyuGramReleases")),
-		[box, controller]
-		{
-			box->closeBox();
-			controller->showPeerByLink(Window::PeerByLinkInfo{
-				.usernameOrId = QString("ayugramreleases"),
-			});
-		});
 
 	box->setWidth(st::aboutWidth);
 }
