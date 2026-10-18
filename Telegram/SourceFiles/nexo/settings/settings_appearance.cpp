@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 //
 // Settings > Appearance. For now it holds the bottom navigation toggle
@@ -264,6 +264,82 @@ void BuildBanners(SectionBuilder &builder) {
 		[](Options &o, int v) { o.crop = Nexo::Banners::Crop(v); });
 	builder.addSkip();
 	builder.addDividerText(tr::nexo_banners_about());
+
+	const auto controller = builder.controller();
+	const auto optionToggle = [&](
+			QString id,
+			rpl::producer<QString> title,
+			bool Options::*field) {
+		const auto button = builder.addButton({
+			.id = id,
+			.title = std::move(title),
+			.st = &st::settingsButtonNoIcon,
+			.toggled = rpl::single(Nexo::Banners::CurrentOptions().*field),
+			.keywords = { u"banner"_q },
+		});
+		if (button) {
+			button->toggledChanges(
+			) | rpl::on_next([=](bool enabled) {
+				auto options = Nexo::Banners::CurrentOptions();
+				options.*field = enabled;
+				Nexo::Banners::SetOptions(options);
+			}, button->lifetime());
+		}
+	};
+	const auto commonButtons = [&](Nexo::Banners::Common which, QString id) {
+		builder.addButton({
+			.id = id + u"_choose"_q,
+			.title = tr::nexo_banners_choose(),
+			.icon = { &st::menuIconPhoto },
+			.onClick = [=] { Nexo::Banners::ChooseCommon(which, controller); },
+		});
+		builder.addButton({
+			.id = id + u"_remove"_q,
+			.title = tr::nexo_banners_remove(),
+			.icon = { &st::menuIconDelete },
+			.onClick = [=] { Nexo::Banners::RemoveCommon(which); },
+		});
+	};
+
+	builder.addSkip();
+	builder.addSubsectionTitle(tr::nexo_banners_chats_title());
+	optionToggle(
+		u"nexo/banners/chat_header"_q,
+		tr::nexo_banners_chat_header(),
+		&Options::chatHeader);
+	optionToggle(
+		u"nexo/banners/chat_avatars"_q,
+		tr::nexo_banners_chat_avatars(),
+		&Options::chatAvatars);
+	optionToggle(
+		u"nexo/banners/chat_everywhere"_q,
+		tr::nexo_banners_chat_everywhere(),
+		&Options::chatEverywhere);
+	commonButtons(Nexo::Banners::Common::Chats, u"nexo/banners/chats"_q);
+	builder.addSkip();
+	builder.addDividerText(tr::nexo_banners_chats_about());
+
+	builder.addSkip();
+	builder.addSubsectionTitle(tr::nexo_banners_list_title());
+	optionToggle(
+		u"nexo/banners/list"_q,
+		tr::nexo_banners_list_enable(),
+		&Options::listBanner);
+	optionToggle(
+		u"nexo/banners/list_wide"_q,
+		tr::nexo_banners_list_wide(),
+		&Options::listWide);
+	commonButtons(Nexo::Banners::Common::List, u"nexo/banners/list"_q);
+	builder.addSkip();
+	builder.addSubsectionTitle(tr::nexo_banners_folders());
+	AddBannerSlider(
+		builder,
+		{ 0, 20, 40, 60, 80, 100 },
+		{ u"0"_q, u"20"_q, u"40"_q, u"60"_q, u"80"_q, u"100"_q },
+		[](const Options &o) { return o.foldersTransparency; },
+		[](Options &o, int v) { o.foldersTransparency = v; });
+	builder.addSkip();
+	builder.addDividerText(tr::nexo_banners_folders_about());
 }
 
 const auto kMeta = BuildHelper({

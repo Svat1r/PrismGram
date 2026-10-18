@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 //
 // Settings > Plugins: list, details, enable/disable, import, remove.
@@ -141,7 +141,7 @@ void ImportPlugin(not_null<Window::SessionController*> controller) {
 	FileDialog::GetOpenPath(
 		controller->widget().get(),
 		tr::nexo_plugins_import(tr::now),
-		u"Nexo Desk plugins (*.nexoplugin *.zip)"_q,
+		u"PrismGram plugins (*.nexoplugin *.zip)"_q,
 		[=](FileDialog::OpenResult &&result) {
 			const auto strong = weak.get();
 			if (!strong || result.paths.isEmpty()) {

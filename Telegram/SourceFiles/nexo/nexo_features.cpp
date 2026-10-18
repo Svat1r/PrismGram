@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/nexo_features.h"
 

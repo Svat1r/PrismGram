@@ -1,5 +1,14 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-<circle cx="256" cy="256" r="256" fill="#3E88F7"/>
-<path d="M169 358V154L343 358V154" fill="none" stroke="#FFFFFF" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="387" cy="125" r="23" fill="#FFFFFF"/>
+<defs><clipPath id="c"><circle cx="256" cy="256" r="256"/></clipPath></defs>
+<circle cx="256" cy="256" r="256" fill="#15171C"/>
+<g clip-path="url(#c)" stroke-linecap="round">
+<line x1="30.7" y1="317.4" x2="192.0" y2="240.6" stroke="#FFFFFF" stroke-width="25.6"/>
+<line x1="307.2" y1="204.8" x2="496.6" y2="215.0" stroke="#FF4D5E" stroke-width="17.4"/>
+<line x1="311.3" y1="212.4" x2="496.6" y2="254.0" stroke="#FF9F43" stroke-width="17.4"/>
+<line x1="315.4" y1="220.0" x2="496.6" y2="292.9" stroke="#FFE14D" stroke-width="17.4"/>
+<line x1="319.5" y1="227.5" x2="496.6" y2="331.8" stroke="#4DE38A" stroke-width="17.4"/>
+<line x1="323.6" y1="235.1" x2="496.6" y2="370.7" stroke="#3E9BFF" stroke-width="17.4"/>
+<line x1="327.7" y1="242.7" x2="496.6" y2="409.6" stroke="#9B6BFF" stroke-width="17.4"/>
+</g>
+<polygon points="256.0,122.9 128.0,358.4 384.0,358.4" fill="#15171C" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="21.5" stroke-linejoin="round"/>
 </svg>

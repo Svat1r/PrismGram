@@ -2,12 +2,12 @@
 
 Every host the client contacts besides Telegram's own servers.
 
-## Added by Nexo Desk
+## Added by PrismGram
 
 | Host | Code | Purpose |
 |---|---|---|
-| `github.com/Svat1r/NexoDesk/releases/latest/download/` (redirects to GitHub's file storage) | `storage/localstorage.cpp`, `core/update_checker.cpp` | Update feed `current6` and signed update packages |
-| `api.github.com/repos/Svat1r/NexoDesk/releases/latest` | `nexo/updates/nexo_updates.cpp` | Release notes, only when "What's new" is clicked |
+| `github.com/Svat1r/PrismGram/releases/latest/download/` (redirects to GitHub's file storage) | `storage/localstorage.cpp`, `core/update_checker.cpp` | Update feed `current6` and signed update packages |
+| `api.github.com/repos/Svat1r/PrismGram/releases/latest` | `nexo/updates/nexo_updates.cpp` | Release notes, only when "What's new" is clicked |
 
 No account, session or message data is sent; these are plain downloads.
 

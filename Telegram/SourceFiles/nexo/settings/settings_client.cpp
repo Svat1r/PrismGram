@@ -1,7 +1,7 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 //
-// Settings > Nexo Desk: versions, updates and settings backup.
+// Settings > PrismGram: versions, updates and settings backup.
 #include "nexo/settings/settings_client.h"
 
 #include "lang_auto.h"
@@ -166,12 +166,12 @@ void BuildUpdates(SectionBuilder &builder) {
 
 void ExportBackup(not_null<Window::SessionController*> controller) {
 	const auto weak = base::make_weak(controller);
-	const auto name = u"NexoDesk-backup-%1.nexobackup"_q.arg(
+	const auto name = u"PrismGram-backup-%1.nexobackup"_q.arg(
 		QDate::currentDate().toString(Qt::ISODate));
 	FileDialog::GetWritePath(
 		controller->widget().get(),
 		tr::nexo_backup_export(tr::now),
-		u"Nexo Desk backup (*.nexobackup)"_q,
+		u"PrismGram backup (*.nexobackup)"_q,
 		QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
 			+ '/' + name,
 		[=](QString &&path) {
@@ -191,7 +191,7 @@ void ImportBackup(not_null<Window::SessionController*> controller) {
 	FileDialog::GetOpenPath(
 		controller->widget().get(),
 		tr::nexo_backup_import(tr::now),
-		u"Nexo Desk backup (*.nexobackup)"_q,
+		u"PrismGram backup (*.nexobackup)"_q,
 		[=](FileDialog::OpenResult &&result) {
 			const auto strong = weak.get();
 			if (!strong || result.paths.isEmpty()) {

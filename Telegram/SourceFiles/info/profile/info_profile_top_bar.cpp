@@ -461,7 +461,7 @@ TopBar::TopBar(
 , _backToggles(std::move(descriptor.backToggles)) {
 	setObjectName(u"profileTopBar"_q);
 	if (!_savedMessages) {
-		// Nexo Desk: local banner, avatar banner or a plugin banner.
+		// PrismGram: local banner, avatar banner or a plugin banner.
 		Nexo::Banners::ProfileValue(_peer) | rpl::on_next([=](QImage image) {
 			_nexoBanner = std::move(image);
 			update();
@@ -2934,7 +2934,7 @@ void TopBar::paintUserpic(QPainter &p, const QRect &geometry) {
 	}
 }
 
-// Nexo Desk: the banner covers the header (center crop) with rounded top
+// PrismGram: the banner covers the header (center crop) with rounded top
 // corners; a fade to the window color keeps the name readable in any theme.
 void TopBar::paintNexoBanner(QPainter &p) {
 	const auto target = QRectF(rect());

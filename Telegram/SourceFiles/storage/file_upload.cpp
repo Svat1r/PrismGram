@@ -69,7 +69,7 @@ constexpr auto kWaitForNormalizeTimeout = 8 * crl::time(1000);
 
 constexpr auto kMaxSessionsCount = 8;
 
-// Nexo Desk: experimental speed boost.
+// PrismGram: experimental speed boost.
 [[nodiscard]] int MaxUploadPerSession() {
 	return kMaxUploadPerSession * Nexo::Features::TransferBoost();
 }

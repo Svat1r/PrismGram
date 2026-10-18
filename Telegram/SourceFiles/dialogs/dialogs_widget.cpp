@@ -112,6 +112,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/ayu_settings.h"
 #include "ayu/utils/telegram_helpers.h"
 #include "nexo/nexo_settings.h"
+#include "nexo/banners/nexo_banners.h"
 #include "nexo/ui/bottom_nav_bar.h"
 #include "nexo/ui/proxy_chip.h"
 #include "nexo/settings/settings_connection.h"
@@ -823,7 +824,7 @@ Widget::Widget(
 	if (_layout != Layout::Child) {
 		setupConnectingWidget();
 
-		// Nexo Desk: floating bottom navigation.
+		// PrismGram: floating bottom navigation.
 		_nexoNavBar.create(this, controller, [=] {
 			if (_openedForum) {
 				controller->closeForum();
@@ -838,7 +839,13 @@ Widget::Widget(
 			updateControlsGeometry();
 		}, lifetime());
 
-		// Nexo Desk: proxy chip inside the search field.
+		// PrismGram: chat list header banner.
+		Nexo::Banners::ListValue() | rpl::on_next([=](QImage image) {
+			_nexoListBanner = std::move(image);
+			update();
+		}, lifetime());
+
+		// PrismGram: proxy chip inside the search field.
 		_nexoProxyChip.create(_searchControls);
 		_nexoProxyChip->setClickedCallback([=] {
 			controller->showSettings(::Settings::NexoConnectionId());
@@ -5072,6 +5079,29 @@ void Widget::paintEvent(QPaintEvent *e) {
 	auto above = QRect(0, 0, width(), _scroll->y());
 	if (above.intersects(r)) {
 		p.fillRect(above.intersected(r), bg);
+	}
+	if (!_nexoListBanner.isNull() && _layout != Layout::Child) {
+		// PrismGram: banner under the search field, or also under the
+		// folder tabs when "wide"; the tabs get a veil of the list color
+		// set by "folders transparency".
+		const auto options = Nexo::Banners::CurrentOptions();
+		const auto searchBottom = _searchControls->y()
+			+ _searchControls->height();
+		const auto bottom = options.listWide
+			? _scroll->y()
+			: std::min(searchBottom, _scroll->y());
+		const auto rect = QRect(0, 0, width(), bottom);
+		Nexo::Banners::PaintCover(p, _nexoListBanner, rect);
+		auto veil = st::dialogsBg->c;
+		veil.setAlpha(70);
+		p.fillRect(QRect(0, 0, width(), searchBottom), veil);
+		if (options.listWide && bottom > searchBottom) {
+			auto tabs = st::dialogsBg->c;
+			tabs.setAlpha(255 * (100 - options.foldersTransparency) / 100);
+			p.fillRect(
+				QRect(0, searchBottom, width(), bottom - searchBottom),
+				tabs);
+		}
 	}
 
 	auto belowTop = _scroll->y() + _scroll->height();

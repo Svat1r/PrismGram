@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/profile/profile_banners.h"
 
@@ -66,7 +66,7 @@ void Load(const QString &link, Fn<void(QImage)> done) {
 	}
 	const auto manager = new QNetworkAccessManager();
 	auto request = QNetworkRequest(QUrl(link));
-	request.setRawHeader("User-Agent", "NexoDesk");
+	request.setRawHeader("User-Agent", "PrismGram");
 	request.setAttribute(
 		QNetworkRequest::RedirectPolicyAttribute,
 		QNetworkRequest::NoLessSafeRedirectPolicy);

@@ -387,6 +387,7 @@ private:
 	std::unique_ptr<Ui::DownloadBar> _downloadBar;
 	object_ptr<Nexo::Ui::BottomNavBar> _nexoNavBar = { nullptr };
 	object_ptr<Nexo::Ui::ProxyChip> _nexoProxyChip = { nullptr };
+	QImage _nexoListBanner; // PrismGram: chat list header banner.
 	std::unique_ptr<Window::ConnectionState> _connecting;
 
 	Ui::Animations::Simple _scrollToAnimation;

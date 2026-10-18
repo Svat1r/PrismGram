@@ -104,7 +104,7 @@ public:
 
 	rpl::producer<bool> listShareableChanges() const;
 
-	// Nexo Desk: bulk proxy tools for the Connection settings section.
+	// PrismGram: bulk proxy tools for the Connection settings section.
 	// Implemented in nexo/connection/nexo_proxy_tools.cpp.
 	struct ImportResult {
 		int added = 0;

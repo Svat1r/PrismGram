@@ -1,11 +1,11 @@
-# Nexo Desk plugins
+# PrismGram plugins
 
 Plugin API version: **1**. Engine: QuickJS-ng 0.17.0 (MIT), submodule
 `Telegram/ThirdParty/quickjs`, built by `Telegram/cmake/lib_quickjs.cmake`.
 
 ## What plugins are and are not
 
-- A plugin is JavaScript run by Nexo Desk inside its own process, with its
+- A plugin is JavaScript run by PrismGram inside its own process, with its
   own QuickJS runtime: 32 MB memory limit, 1 MB stack, 500 ms limit for
   every call into plugin code.
 - Plugins only see the `nexo` object below. The engine is built without
@@ -15,7 +15,7 @@ Plugin API version: **1**. Engine: QuickJS-ng 0.17.0 (MIT), submodule
   could still be exploited by a malicious plugin. Install only trusted
   plugins; the client says so before every install.
 - exteraGram and AyuGram for Android plugins (`.plugin`, Python) do not run
-  in Nexo Desk: they use Android/Java APIs. AyuGram's info box for such
+  in PrismGram: they use Android/Java APIs. AyuGram's info box for such
   files is kept.
 
 ## Package
@@ -38,7 +38,7 @@ See `plugin-example/` and `plugin-example/pack.py`.
   "id": "nexo.example.uppercase",
   "name": "Uppercase copy",
   "version": "1.0.0",
-  "author": "Nexo Desk",
+  "author": "PrismGram",
   "description": "What it does.",
   "source": "https://example.com/plugin",
   "api_version": 1,
@@ -56,7 +56,7 @@ See `plugin-example/` and `plugin-example/pack.py`.
 | `version` | Required, `1`, `1.2` or `1.2.3` |
 | `entry` | Required, a `.js` file in the package root |
 | `api_version` | Required, must be `1` |
-| `min_client`, `max_client` | Optional Nexo Desk versions, `x` allowed in `max_client` |
+| `min_client`, `max_client` | Optional PrismGram versions, `x` allowed in `max_client` |
 | `source` | Optional, `https://` only; shown before install |
 | `permissions` | Only the names below; an unknown name makes the plugin incompatible |
 
@@ -66,7 +66,7 @@ Always available:
 
 | Call | Does |
 |---|---|
-| `nexo.version` | Nexo Desk version string |
+| `nexo.version` | PrismGram version string |
 | `nexo.apiVersion` | `1` |
 | `nexo.log(text)` | Appends to the plugin's log |
 | `nexo.toast(text)` | Shows a toast; outside a user action it only goes to the log |
@@ -86,7 +86,7 @@ plugin is turned off, removed or the app quits, `onUnload()` if defined.
 
 ## Where things are stored
 
-All under the user data folder (`%APPDATA%\Nexo Desk\tdata\nexo\`):
+All under the user data folder (`%APPDATA%\PrismGram\tdata\nexo\`):
 
 | Path | What |
 |---|---|
@@ -111,7 +111,7 @@ All under the user data folder (`%APPDATA%\Nexo Desk\tdata\nexo\`):
 
 ## Versioning
 
-- Nexo Desk version, base AyuGram version and plugin API version are
+- PrismGram version, base AyuGram version and plugin API version are
   separate (`nexo/nexo_version.h`).
 - New calls and permissions can be added within API v1. Removing or
   changing anything bumps the API version.

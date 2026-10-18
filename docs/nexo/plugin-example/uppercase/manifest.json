@@ -2,7 +2,7 @@
   "id": "nexo.example.uppercase",
   "name": "Uppercase copy",
   "version": "1.0.0",
-  "author": "Nexo Desk",
+  "author": "PrismGram",
   "description": "Example plugin: adds \"Copy in uppercase\" to the message menu and counts how often it was used.",
   "api_version": 1,
   "min_client": "0.1.0",

@@ -1,4 +1,4 @@
-# Nexo Desk: exteraGram vs AyuGram Desktop
+# PrismGram: exteraGram vs AyuGram Desktop
 
 Status: draft for approval, 2026-10-18.
 
@@ -25,7 +25,7 @@ source, the docs or the screenshots. Nothing below is claimed for them.
 ## Architecture
 
 exteraGram is an Android app (Java, Android SDK). AyuGram Desktop is C++/Qt.
-They share no UI or platform code, so code is not merged or copied. Nexo Desk
+They share no UI or platform code, so code is not merged or copied. PrismGram
 takes ideas and UX from exteraGram and implements them on top of AyuGram,
 in `Telegram/SourceFiles/nexo/`, with small hooks into upstream files.
 Copying exteraGram code would also need a license check (GPL-2.0 vs the

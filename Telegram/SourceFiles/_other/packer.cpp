@@ -683,7 +683,7 @@ int main(int argc, char *argv[])
 			cout << "The -keys-loc param is required for -channel packing!\n";
 			return -1;
 		} else if (canary && !V2Counter) {
-			// Nexo Desk: stable and beta may carry the Nexo counter too.
+			// PrismGram: stable and beta may carry the Nexo counter too.
 			cout << "Canary channels require a positive -counter!\n";
 			return -1;
 		} else if (!V2EmbedSignatures.empty()) {

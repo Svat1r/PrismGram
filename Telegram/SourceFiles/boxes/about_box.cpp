@@ -51,14 +51,14 @@ rpl::producer<TextWithEntities> Text() {
 		lt_github_link,
 		rpl::single(Ui::Text::Link(
 			"GitHub",
-			"https://github.com/Svat1r/NexoDesk")),
+			"https://github.com/Svat1r/PrismGram")),
 		tr::marked);
 }
 
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box, Window::SessionController* controller) {
-	box->setTitle(rpl::single(u"Nexo Desk"_q));
+	box->setTitle(rpl::single(u"PrismGram"_q));
 
 	auto layout = box->verticalLayout();
 
@@ -89,7 +89,7 @@ void AboutBox(not_null<Ui::GenericBox*> box, Window::SessionController* controll
 		Ui::AddSkip(layout, st::aboutSkip);
 	};
 
-	// Nexo Desk: own version, base version and plugin API version.
+	// PrismGram: own version, base version and plugin API version.
 	addText(tr::nexo_about_based(
 		lt_base,
 		rpl::single(Ui::Text::Link(

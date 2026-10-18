@@ -29,7 +29,7 @@ struct ShortenedCount {
 [[nodiscard]] ShortenedCount FormatCountToShort(
 	int64 number,
 	bool onlyK = false);
-// Nexo Desk: when set, FormatCountToShort() returns full numbers.
+// PrismGram: when set, FormatCountToShort() returns full numbers.
 void SetCountShorteningDisabled(bool disabled);
 [[nodiscard]] QString FormatCountDecimal(int64 number);
 [[nodiscard]] QString FormatExactCountDecimal(float64 number);

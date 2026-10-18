@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/banners/nexo_banners.h"
 
@@ -62,6 +62,12 @@ State &Store() {
 	return Dir() + QString::number(peerId) + u".jpg"_q;
 }
 
+[[nodiscard]] QString CommonPath(Common which) {
+	return Dir() + ((which == Common::Chats)
+		? u"_chats.jpg"_q
+		: u"_list.jpg"_q);
+}
+
 [[nodiscard]] QString CropName(Crop crop) {
 	switch (crop) {
 	case Crop::Top: return u"top"_q;
@@ -85,6 +91,12 @@ void Save() {
 		{ u"darken"_q, data.options.darken },
 		{ u"crop"_q, CropName(data.options.crop) },
 		{ u"profileAvatars"_q, data.options.profileAvatars },
+		{ u"chatHeader"_q, data.options.chatHeader },
+		{ u"chatAvatars"_q, data.options.chatAvatars },
+		{ u"chatEverywhere"_q, data.options.chatEverywhere },
+		{ u"listBanner"_q, data.options.listBanner },
+		{ u"listWide"_q, data.options.listWide },
+		{ u"foldersTransparency"_q, data.options.foldersTransparency },
 		{ u"peers"_q, peers },
 	};
 	QDir().mkpath(QFileInfo(ConfigPath()).absolutePath());
@@ -123,6 +135,15 @@ void EnsureLoaded() {
 		: Crop::Center;
 	data.options.profileAvatars = object.value(
 		u"profileAvatars"_q).toBool(false);
+	data.options.chatHeader = object.value(u"chatHeader"_q).toBool(true);
+	data.options.chatAvatars = object.value(u"chatAvatars"_q).toBool(false);
+	data.options.chatEverywhere = object.value(
+		u"chatEverywhere"_q).toBool(false);
+	data.options.listBanner = object.value(u"listBanner"_q).toBool(false);
+	data.options.listWide = object.value(u"listWide"_q).toBool(false);
+	data.options.foldersTransparency = number(
+		"foldersTransparency",
+		data.options.foldersTransparency);
 	const auto peers = object.value(u"peers"_q).toObject();
 	for (auto i = peers.begin(); i != peers.end(); ++i) {
 		const auto id = i.key().toULongLong();
@@ -186,9 +207,11 @@ void SetSource(not_null<PeerData*> peer, Source source) {
 	return reader.read();
 }
 
-void ChooseImage(
-		not_null<PeerData*> peer,
-		not_null<Window::SessionController*> controller) {
+// Lets the user pick a picture and stores it, scaled, as JPEG at path.
+void PickImageTo(
+		not_null<Window::SessionController*> controller,
+		QString path,
+		Fn<void()> done) {
 	const auto weak = base::make_weak(controller);
 	FileDialog::GetOpenPath(
 		controller->widget().get(),
@@ -219,13 +242,27 @@ void ChooseImage(
 					Qt::SmoothTransformation);
 			}
 			QDir().mkpath(Dir());
-			if (!image.save(ImagePath(peer->id.value), "JPG", 92)) {
+			if (!image.save(path, "JPG", 92)) {
 				strong->showToast(tr::nexo_banners_bad_image(tr::now));
 				return;
 			}
-			SetSource(peer, Source::Image);
+			done();
 			strong->showToast(tr::nexo_banners_set(tr::now));
 		});
+}
+
+void ChooseImage(
+		not_null<PeerData*> peer,
+		not_null<Window::SessionController*> controller) {
+	PickImageTo(controller, ImagePath(peer->id.value), [=] {
+		SetSource(peer, Source::Image);
+	});
+}
+
+[[nodiscard]] QImage LoadPath(const QString &path) {
+	auto reader = QImageReader(path);
+	reader.setAutoTransform(true);
+	return reader.read();
 }
 
 // The avatar as a square image, once it is loaded.
@@ -273,6 +310,10 @@ void SetOptions(const Options &options) {
 	data.options = options;
 	data.options.blur = std::clamp(options.blur, 0, 100);
 	data.options.darken = std::clamp(options.darken, 0, 100);
+	data.options.foldersTransparency = std::clamp(
+		options.foldersTransparency,
+		0,
+		100);
 	Save();
 	data.changes.fire({});
 }
@@ -307,6 +348,79 @@ rpl::producer<QImage> ProfileValue(not_null<PeerData*> peer) {
 		}
 		return rpl::single(QImage());
 	}) | rpl::flatten_latest();
+}
+
+rpl::producer<QImage> ChatValue(not_null<PeerData*> peer) {
+	return rpl::single(rpl::empty) | rpl::then(
+		Changes()
+	) | rpl::map([=]() -> rpl::producer<QImage> {
+		const auto &options = CurrentOptions();
+		const auto source = options.chatHeader
+			? SourceFor(peer)
+			: Source::None;
+		if (source == Source::Image) {
+			return rpl::single(
+				ApplyEffects(LoadCustom(peer->id.value), false));
+		} else if (source == Source::Avatar || options.chatAvatars) {
+			return AvatarValue(peer) | rpl::map([](QImage image) {
+				return ApplyEffects(std::move(image), true);
+			});
+		} else if (options.chatEverywhere && HasCommon(Common::Chats)) {
+			return rpl::single(
+				ApplyEffects(LoadPath(CommonPath(Common::Chats)), false));
+		}
+		return rpl::single(QImage());
+	}) | rpl::flatten_latest();
+}
+
+rpl::producer<QImage> ListValue() {
+	return rpl::single(rpl::empty) | rpl::then(
+		Changes()
+	) | rpl::map([] {
+		return (CurrentOptions().listBanner && HasCommon(Common::List))
+			? ApplyEffects(LoadPath(CommonPath(Common::List)), false)
+			: QImage();
+	});
+}
+
+bool HasCommon(Common which) {
+	return QFile::exists(CommonPath(which));
+}
+
+void ChooseCommon(
+		Common which,
+		not_null<Window::SessionController*> controller) {
+	PickImageTo(controller, CommonPath(which), [] {
+		EnsureLoaded();
+		Store().changes.fire({});
+	});
+}
+
+void RemoveCommon(Common which) {
+	QFile::remove(CommonPath(which));
+	EnsureLoaded();
+	Store().changes.fire({});
+}
+
+void PaintCover(QPainter &p, const QImage &image, QRect rect) {
+	if (image.isNull() || rect.isEmpty()) {
+		return;
+	}
+	const auto source = QSizeF(image.size());
+	const auto scale = std::max(
+		rect.width() / source.width(),
+		rect.height() / source.height());
+	const auto size = source * scale;
+	const auto drawn = QRectF(
+		rect.x() + (rect.width() - size.width()) / 2.,
+		rect.y() + (rect.height() - size.height()) * CropAlign(),
+		size.width(),
+		size.height());
+	p.save();
+	p.setClipRect(rect, Qt::IntersectClip);
+	p.setRenderHint(QPainter::SmoothPixmapTransform);
+	p.drawImage(drawn, image);
+	p.restore();
 }
 
 void AddMenuActions(

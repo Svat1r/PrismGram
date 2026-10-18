@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_top_bar_widget.h"
 
 #include "nexo/nexo_settings.h"
+#include "nexo/banners/nexo_banners.h"
 
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
@@ -86,7 +87,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 namespace HistoryView {
 namespace {
 
-// Nexo Desk: offset that centers content of the given width.
+// PrismGram: offset that centers content of the given width.
 [[nodiscard]] int NexoCenteredShift(int contentWidth, int available) {
 	if (!Nexo::Settings::Instance().get(Nexo::Flag::CenteredTitle)) {
 		return 0;
@@ -570,6 +571,14 @@ void TopBarWidget::paintEvent(QPaintEvent *e) {
 	const auto slidingTop = std::max(selectedButtonsTop, searchFieldTop);
 
 	p.fillRect(QRect(0, 0, width(), st::topBarHeight), st::topBarBg);
+	if (!_nexoBanner.isNull()) {
+		// PrismGram: banner with a veil of the header color for the title.
+		const auto bar = QRect(0, 0, width(), st::topBarHeight);
+		Nexo::Banners::PaintCover(p, _nexoBanner, bar);
+		auto veil = st::topBarBg->c;
+		veil.setAlpha(120);
+		p.fillRect(bar, veil);
+	}
 	if (slidingTop < 0) {
 		p.translate(0, slidingTop + st::topBarHeight);
 		paintTopBar(p);
@@ -704,7 +713,7 @@ void TopBarWidget::paintTopBar(Painter &p) {
 				TopBarNameText(namePeer, _activeChat),
 				Ui::NameTextOptions());
 		}
-		// Nexo Desk: optional centered title.
+		// PrismGram: optional centered title.
 		if (const auto shift = NexoCenteredShift(
 				_title.maxWidth(),
 				namewidth)) {
@@ -965,7 +974,12 @@ void TopBarWidget::setActiveChat(
 		_titleNameVersion = 0;
 		_emojiInteractionSeen = nullptr;
 		_activeChatLifetime.destroy();
+		_nexoBanner = QImage();
 		if (const auto peer = _activeChat.key.peer()) {
+			Nexo::Banners::ChatValue(peer) | rpl::on_next([=](QImage image) {
+				_nexoBanner = std::move(image);
+				update();
+			}, _activeChatLifetime);
 			session().changes().peerFlagsValue(
 				peer,
 				Data::PeerUpdate::Flag::GroupCall

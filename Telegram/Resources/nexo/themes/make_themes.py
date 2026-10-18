@@ -1,4 +1,4 @@
-"""Generates the built-in Nexo Desk themes.
+"""Generates the built-in PrismGram themes.
 
 Usage (from Telegram/Resources/nexo/themes):  python make_themes.py
 

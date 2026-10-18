@@ -1,25 +1,25 @@
-; Nexo Desk installer for Windows x64 (Inno Setup 6).
+; PrismGram installer for Windows x64 (Inno Setup 6).
 ; Based on Telegram/build/setup.iss from Telegram Desktop / AyuGram.
 ;
 ; Build:  ISCC.exe /DMyAppVersion=0.1.0 /DReleasePath=C:\TBuild\tdesktop\out\Release nexo_setup.iss
 ;
 ; Differences from the upstream script:
 ; - own AppId, names and exe;
-; - the program goes to %LOCALAPPDATA%\Programs\Nexo Desk, user data stays in
-;   %APPDATA%\Nexo Desk, so reinstalling or updating never touches it;
+; - the program goes to %LOCALAPPDATA%\Programs\PrismGram, user data stays in
+;   %APPDATA%\PrismGram, so reinstalling or updating never touches it;
 ; - uninstalling asks before deleting user data (account login, settings,
 ;   plugins) and keeps it by default.
 
-#define MyAppShortName "Nexo Desk"
-#define MyAppName "Nexo Desk"
-#define MyAppPublisher "Nexo Desk"
-#define MyAppExeName "NexoDesk.exe"
+#define MyAppShortName "PrismGram"
+#define MyAppName "PrismGram"
+#define MyAppPublisher "PrismGram"
+#define MyAppExeName "PrismGram.exe"
 ; Must match AppId in Telegram/SourceFiles/core/version.h.
 #define MyAppId "B72EFDDC-98AA-48C4-A7A6-E8BEFBE62C02"
 #define CurrentYear GetDateTimeString('yyyy','','')
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.1.0"
+  #define MyAppVersion "0.2.0"
 #endif
 #ifndef ReleasePath
   #define ReleasePath "..\..\out\Release"
@@ -36,7 +36,7 @@ DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir={#ReleasePath}\..\installer
-OutputBaseFilename=NexoDesk-Setup-x64-{#MyAppVersion}
+OutputBaseFilename=PrismGram-Setup-x64-{#MyAppVersion}
 SetupIconFile={#SourcePath}..\Resources\art\icon256.ico
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
@@ -47,6 +47,8 @@ PrivilegesRequired=lowest
 VersionInfoVersion={#MyAppVersion}.0
 CloseApplications=force
 DisableDirPage=no
+; Same AppId as Nexo Desk (the old name), but a new folder.
+UsePreviousAppDir=no
 DisableProgramGroupPage=yes
 WizardStyle=modern
 ArchitecturesAllowed=x64compatible
@@ -57,8 +59,8 @@ Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ru.DeleteUserData=Удалить также данные Nexo Desk: вход в аккаунт, настройки, темы и плагины?%n%nЕсли вы собираетесь переустановить программу, нажмите «Нет».
-english.DeleteUserData=Also delete Nexo Desk data: account login, settings, themes and plugins?%n%nIf you are going to reinstall, choose No.
+ru.DeleteUserData=Удалить также данные PrismGram: вход в аккаунт, настройки, темы и плагины?%n%nЕсли вы собираетесь переустановить программу, нажмите «Нет».
+english.DeleteUserData=Also delete PrismGram data: account login, settings, themes and plugins?%n%nIf you are going to reinstall, choose No.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -76,6 +78,14 @@ Name: "{userdesktop}\{#MyAppShortName}"; Filename: "{app}\{#MyAppExeName}"; Task
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppShortName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[InstallDelete]
+; Program files and shortcuts of Nexo Desk, the old name. User data in
+; %APPDATA%\Nexo Desk is moved to %APPDATA%\PrismGram by the app itself.
+Type: filesandordirs; Name: "{localappdata}\Programs\Nexo Desk"
+Type: files; Name: "{userdesktop}\Nexo Desk.lnk"
+Type: files; Name: "{userprograms}\Nexo Desk.lnk"
+Type: filesandordirs; Name: "{userprograms}\Nexo Desk"
 
 [UninstallDelete]
 ; Only program files. User data is handled in [Code] below.

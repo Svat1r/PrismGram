@@ -26,9 +26,9 @@ const PROPERTYKEY pkey_AppUserModel_StartPinOption = { { 0x9F4C2855, 0x9F79, 0x4
 const PROPERTYKEY pkey_AppUserModel_ToastActivator = { { 0x9F4C2855, 0x9F79, 0x4B39, { 0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3 } }, 26 };
 
 #ifdef OS_WIN_STORE
-const WCHAR AppUserModelIdBase[] = L"NexoDesk.NexoDesk.Store";
+const WCHAR AppUserModelIdBase[] = L"PrismGram.PrismGram.Store";
 #else // OS_WIN_STORE
-const WCHAR AppUserModelIdBase[] = L"NexoDesk.NexoDesk";
+const WCHAR AppUserModelIdBase[] = L"PrismGram.PrismGram";
 #endif // OS_WIN_STORE
 
 } // namespace

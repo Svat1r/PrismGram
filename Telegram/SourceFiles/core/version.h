@@ -18,10 +18,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #endif // TDESKTOP_ALLOW_CLOSED_ALPHA
 
 // used in Updater.cpp and Setup.iss for Windows
-constexpr auto AppId = "{B72EFDDC-98AA-48C4-A7A6-E8BEFBE62C02}"_cs; // Nexo Desk
-constexpr auto AppNameOld = "Nexo Desk for Windows"_cs;
-constexpr auto AppName = "Nexo Desk"_cs;
-constexpr auto AppFile = "NexoDesk"_cs;
+constexpr auto AppId = "{B72EFDDC-98AA-48C4-A7A6-E8BEFBE62C02}"_cs; // PrismGram
+constexpr auto AppNameOld = "PrismGram for Windows"_cs;
+constexpr auto AppName = "PrismGram"_cs;
+constexpr auto AppFile = "PrismGram"_cs;
 constexpr auto AppVersion = 7002009;
 constexpr auto AppVersionStr = "7.2.9";
 constexpr auto AppBetaVersion = false;

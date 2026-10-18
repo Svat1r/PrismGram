@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/backup/settings_backup.h"
 
@@ -90,7 +90,7 @@ bool Export(const QString &path, QString *error) {
 	}
 	const auto meta = QJsonObject{
 		{ u"format"_q, kFormat },
-		{ u"app"_q, u"Nexo Desk"_q },
+		{ u"app"_q, u"PrismGram"_q },
 		{ u"version"_q, QString::fromLatin1(kVersion) },
 		{ u"created"_q, QDateTime::currentDateTimeUtc().toString(Qt::ISODate) },
 		{ u"files"_q, list },
@@ -122,8 +122,9 @@ Summary Inspect(const QString &path) {
 	const auto object = meta
 		? QJsonDocument::fromJson(*meta).object()
 		: QJsonObject();
-	if (object.value(u"app"_q).toString() != u"Nexo Desk"_q) {
-		result.error = u"This is not a Nexo Desk backup."_q;
+	const auto app = object.value(u"app"_q).toString();
+	if (app != u"PrismGram"_q && app != u"Nexo Desk"_q) {
+		result.error = u"This is not a PrismGram backup."_q;
 		return result;
 	} else if (object.value(u"format"_q).toInt() != kFormat) {
 		result.error = u"Unsupported backup format."_q;

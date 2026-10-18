@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/themes/nexo_themes.h"
 
@@ -51,7 +51,7 @@ namespace {
 
 const std::vector<Theme> &List() {
 	static const auto result = std::vector<Theme>{
-		{ u"nexo-night"_q, u"Nexo Night"_q, QColor(0x3E, 0x88, 0xF7), QColor(0x13, 0x17, 0x1C) },
+		{ u"nexo-night"_q, u"Prism Night"_q, QColor(0x3E, 0x88, 0xF7), QColor(0x13, 0x17, 0x1C) },
 		{ u"nexo-amoled"_q, u"AMOLED"_q, QColor(0x3E, 0x88, 0xF7), QColor(0x00, 0x00, 0x00) },
 		{ u"nexo-ocean"_q, u"Ocean"_q, QColor(0x14, 0xA3, 0xB8), QColor(0x0F, 0x1A, 0x20) },
 		{ u"nexo-violet"_q, u"Violet"_q, QColor(0x8B, 0x5C, 0xF6), QColor(0x15, 0x12, 0x1E) },

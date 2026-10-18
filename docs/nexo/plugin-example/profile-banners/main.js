@@ -1,9 +1,9 @@
-// Profile banners for Nexo Desk (plugin API v1, "profile.banner").
+// Profile banners for PrismGram (plugin API v1, "profile.banner").
 //
 // A banner is set by writing a link in your own bio:
 //   banner: https://i.imgur.com/XXXX.jpg
 // or by putting a direct image link (.jpg .jpeg .png .webp .gif) there.
-// Nexo Desk downloads the link only if it really is in that user's bio.
+// PrismGram downloads the link only if it really is in that user's bio.
 
 var MARKED = /banner\s*[:=]\s*(https:\/\/\S+)/i;
 var IMAGE = /(https:\/\/\S+\.(?:jpe?g|png|webp|gif))(?:\?\S*)?/i;

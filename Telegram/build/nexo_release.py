@@ -1,18 +1,18 @@
-"""Builds the release files of Nexo Desk for Windows x64.
+"""Builds the release files of PrismGram for Windows x64.
 
   python nexo_release.py --keys-dir C:\\TBuild\\nexo-keys
   python nexo_release.py --keys-dir ... --publish   (asks gh to upload)
 
 Expects a finished Release build with auto-update enabled in out/Release
-(NexoDesk.exe, Updater.exe, Packer.exe). Produces in out/release-<version>:
+(PrismGram.exe, Updater.exe, Packer.exe). Produces in out/release-<version>:
 
   td-update-win-x64-<base>-nexo<counter>   signed v2 update package
   current6                                 update feed for the client
-  NexoDesk-Setup-x64-<version>.exe         installer (Inno Setup 6)
+  PrismGram-Setup-x64-<version>.exe         installer (Inno Setup 6)
   NOTES.md                                 release notes to edit
 
 The feed and the package go to the GitHub release; the client reads
-https://github.com/Svat1r/NexoDesk/releases/latest/download/current6.
+https://github.com/Svat1r/PrismGram/releases/latest/download/current6.
 Nothing is uploaded without --publish, and --publish uses the gh CLI
 with your own GitHub login.
 """
@@ -29,7 +29,7 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SOURCES = os.path.join(ROOT, 'Telegram', 'SourceFiles')
 RELEASE = os.path.join(ROOT, 'out', 'Release')
 UPDATE_KEYS = os.path.join(ROOT, 'Telegram', 'Resources', 'update')
-REPO = 'Svat1r/NexoDesk'
+REPO = 'Svat1r/PrismGram'
 ISCC_CANDIDATES = [
     os.path.expandvars(r'%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe'),
     r'C:\Program Files (x86)\Inno Setup 6\ISCC.exe',
@@ -60,7 +60,7 @@ def main():
     version, counter, api, base = nexo_versions()
     key = os.path.join(args.keys_dir, 'release-private.pem')
     key_id = read(os.path.join(args.keys_dir, 'release-key-id.txt')).strip()
-    for path in ('NexoDesk.exe', 'Updater.exe', 'Packer.exe'):
+    for path in ('PrismGram.exe', 'Updater.exe', 'Packer.exe'):
         if not os.path.exists(os.path.join(RELEASE, path)):
             sys.exit('Missing out/Release/%s: build with auto-update on.' % path)
 
@@ -71,7 +71,7 @@ def main():
     subprocess.run([
         os.path.join(RELEASE, 'Packer.exe'),
         '-version', str(base),
-        '-path', 'NexoDesk.exe',
+        '-path', 'PrismGram.exe',
         '-path', 'Updater.exe',
         '-path', r'modules\x64\d3d\d3dcompiler_47.dll',
         '-target', 'win64',
@@ -112,8 +112,8 @@ def main():
     notes = os.path.join(out, 'NOTES.md')
     if not os.path.exists(notes):
         with open(notes, 'w', encoding='utf-8') as f:
-            f.write('## Nexo Desk %s\n\nBased on AyuGram Desktop %d.\n'
-                    'Plugin API: %d.\n\n### Nexo Desk\n\n- \n\n'
+            f.write('## PrismGram %s\n\nBased on AyuGram Desktop %d.\n'
+                    'Plugin API: %d.\n\n### PrismGram\n\n- \n\n'
                     '### AyuGram changes\n\n- \n\n### Security\n\n- \n'
                     % (version, base, api))
     print('Release files are in', out)
@@ -121,11 +121,11 @@ def main():
     if args.publish:
         tag = 'v' + version
         files = [os.path.join(out, name) for name in (
-            package, 'current6', 'NexoDesk-Setup-x64-%s.exe' % version)]
+            package, 'current6', 'PrismGram-Setup-x64-%s.exe' % version)]
         subprocess.run([
             'gh', 'release', 'create', tag, *files,
             '--repo', REPO,
-            '--title', 'Nexo Desk ' + version,
+            '--title', 'PrismGram ' + version,
             '--notes-file', notes,
         ], check=True)
         print('Published', tag)

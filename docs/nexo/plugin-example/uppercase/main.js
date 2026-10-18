@@ -1,8 +1,8 @@
-// Example Nexo Desk plugin (plugin API v1).
+// Example PrismGram plugin (plugin API v1).
 // Globals: `nexo` (API), optional `onLoad()` and `onUnload()`.
 
 function onLoad() {
-	nexo.log("Loaded in Nexo Desk " + nexo.version);
+	nexo.log("Loaded in PrismGram " + nexo.version);
 	nexo.menu.addMessageItem("Copy in uppercase", function (message) {
 		// `message.text` is present only with the "messages.read" permission.
 		if (!message.text) {

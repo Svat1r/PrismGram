@@ -21,7 +21,7 @@ namespace AyuAssets {
 QString appIcoPath() {
 	const auto &settings = AyuSettings::getInstance();
 	return cWorkingDir()
-		+ u"tdata/NexoDesk-"_q
+		+ u"tdata/PrismGram-"_q
 		+ settings.appIcon()
 		+ u".ico"_q;
 }

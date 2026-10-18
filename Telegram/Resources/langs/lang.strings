@@ -9192,7 +9192,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_UpdateAyuGram" = "Update AyuGram";
 "ayu_UtilityRestartRequired" = "The app will close in 5 seconds.";
 
-// Nexo Desk
+// PrismGram
 "nexo_connection_title" = "Connection";
 "nexo_connection_proxy_list" = "Proxy list";
 "nexo_connection_import_title" = "Import";
@@ -9229,12 +9229,12 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_proxy_chip" = "Proxy";
 "nexo_appearance_proxy_chip" = "Proxy button in search";
 "nexo_appearance_proxy_chip_about" = "Shows whether a proxy is in use. Click it to open Connection settings.";
-"nexo_appearance_nexo_themes" = "Nexo themes";
-"nexo_appearance_nexo_themes_about" = "Dark themes made for Nexo Desk. Telegram themes, accent colors and wallpapers are still available below.";
+"nexo_appearance_nexo_themes" = "PrismGram themes";
+"nexo_appearance_nexo_themes_about" = "Dark themes made for PrismGram. Telegram themes, accent colors and wallpapers are still available below.";
 "nexo_plugins_title" = "Plugins";
 "nexo_plugins_import" = "Import plugin";
 "nexo_plugins_open_folder" = "Open plugins folder";
-"nexo_plugins_about" = "Plugins are JavaScript run by Nexo Desk with the permissions you allow. They are not isolated from the app: install only plugins you trust. exteraGram and AyuGram for Android plugins do not work here.";
+"nexo_plugins_about" = "Plugins are JavaScript run by PrismGram with the permissions you allow. They are not isolated from the app: install only plugins you trust. exteraGram and AyuGram for Android plugins do not work here.";
 "nexo_plugins_installed" = "Installed";
 "nexo_plugins_empty" = "No plugins installed. Import a .nexoplugin file.";
 "nexo_plugins_state_running" = "Running";
@@ -9263,7 +9263,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_plugins_install" = "Install";
 "nexo_plugins_update" = "Update";
 "nexo_plugins_install_unverified" = "The source is not specified, the author is not verified.";
-"nexo_plugins_install_warning" = "The plugin will run code inside Nexo Desk. It starts turned off; turn it on in the list.";
+"nexo_plugins_install_warning" = "The plugin will run code inside PrismGram. It starts turned off; turn it on in the list.";
 "nexo_plugins_incompatible_warning" = "It will not run in this version: {reason}";
 "nexo_plugins_installed_toast" = "Plugin {name} installed. Turn it on in the list.";
 "nexo_plugins_install_failed" = "Could not install the plugin: {error}";
@@ -9285,7 +9285,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_connection_experimental" = "Experimental";
 "nexo_connection_speed_boost" = "Faster downloads and uploads";
 "nexo_connection_speed_boost_about" = "Sends twice as many parallel requests for files. Telegram may slow down accounts that request too much; turn it off if downloads stall.";
-"nexo_client_title" = "Nexo Desk";
+"nexo_client_title" = "PrismGram";
 "nexo_client_version" = "Version";
 "nexo_client_base" = "Based on";
 "nexo_client_plugin_api" = "Plugin API";
@@ -9295,18 +9295,18 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_updates_notes_failed" = "Could not load release notes: {error}";
 "nexo_updates_notes_empty" = "No description for this release.";
 "nexo_updates_rollback" = "Go back to the previous version";
-"nexo_updates_rollback_sure" = "Nexo Desk will close, restore the version from before the last update and start again. Your data stays.";
+"nexo_updates_rollback_sure" = "PrismGram will close, restore the version from before the last update and start again. Your data stays.";
 "nexo_updates_rollback_button" = "Go back";
 "nexo_updates_plugins_warning" = "The new version uses plugin API {version}. Plugins made for this version will be turned off after the update; their files and settings are kept.";
-"nexo_updates_about" = "Updates come from github.com/Svat1r/NexoDesk and are installed only if their signature matches the Nexo Desk key.";
+"nexo_updates_about" = "Updates come from github.com/Svat1r/PrismGram and are installed only if their signature matches the PrismGram key.";
 "nexo_backup_title" = "Backup";
 "nexo_backup_export" = "Export settings";
 "nexo_backup_import" = "Import settings";
 "nexo_backup_exported" = "Settings saved.";
 "nexo_backup_failed" = "Backup failed: {error}";
-"nexo_backup_import_sure" = "Load settings from a backup made by Nexo Desk {version} on {date}? Current Nexo, AyuGram and plugin settings will be replaced and the app will restart.";
+"nexo_backup_import_sure" = "Load settings from a backup made by PrismGram {version} on {date}? Current PrismGram, AyuGram and plugin settings will be replaced and the app will restart.";
 "nexo_backup_import_restart" = "Load and restart";
-"nexo_backup_about" = "The file has Nexo and AyuGram settings, plugins and their settings. It never contains your account, login keys or messages.";
+"nexo_backup_about" = "The file has PrismGram and AyuGram settings, plugins and their settings. It never contains your account, login keys or messages.";
 "nexo_banners_title" = "Banners";
 "nexo_banners_profile_avatars" = "Avatar as the banner of every profile";
 "nexo_banners_blur" = "Blur";
@@ -9323,3 +9323,13 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "nexo_banners_set" = "Banner set.";
 "nexo_banners_too_big" = "The picture is larger than 30 MB.";
 "nexo_banners_bad_image" = "Could not read the picture.";
+"nexo_banners_chats_title" = "Chat header";
+"nexo_banners_chat_header" = "Show chat banners in the header";
+"nexo_banners_chat_avatars" = "Avatar as the banner of every chat";
+"nexo_banners_chat_everywhere" = "One common banner in all chats";
+"nexo_banners_chats_about" = "A banner set for a chat (⋮ → Banner) comes first, then the avatar, then the common picture.";
+"nexo_banners_list_title" = "Chat list";
+"nexo_banners_list_enable" = "Banner at the top of the chat list";
+"nexo_banners_list_wide" = "Wide banner (also under folders)";
+"nexo_banners_folders" = "Folder tabs transparency";
+"nexo_banners_folders_about" = "0 keeps the folder tabs as usual, 100 makes them fully see-through. Works with the wide banner.";

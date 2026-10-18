@@ -67,7 +67,7 @@ inline constexpr auto CanaryMetadataMessageId
 	= int(TDESKTOP_CANARY_METADATA_MSG_ID);
 
 [[nodiscard]] inline constexpr quint64 RunningUpdateVersion() {
-	// Nexo Desk: stable builds carry the Nexo release counter.
+	// PrismGram: stable builds carry the Nexo release counter.
 	return Updates::MakeUpdateVersion(
 		quint32(AppVersion),
 		BuildIsCanary

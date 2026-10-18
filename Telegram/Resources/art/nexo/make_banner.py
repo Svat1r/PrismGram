@@ -1,4 +1,4 @@
-"""Draws the Nexo Desk banner (GitHub social preview, README header).
+"""Draws the PrismGram banner (GitHub social preview, README header).
 
 Usage (from Telegram/Resources/art/nexo):  python make_banner.py
 Writes banner.png (1280x640). Uses Windows fonts (Segoe UI, Consolas).
@@ -7,6 +7,8 @@ import math
 import os
 import random
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+import make_icons  # the prism logo, same as the app icon
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H = 1280, 640
@@ -56,25 +58,6 @@ def vignette(img):
     return Image.composite(img, Image.new('L', (W, H), 0), mask)
 
 
-def logo(size):
-    """Monochrome version of the Nexo logo: ring, N and the orbit dot."""
-    s = size * 4
-    img = Image.new('LA', (s, s), (0, 0))
-    d = ImageDraw.Draw(img)
-    d.ellipse([0, 0, s - 1, s - 1], fill=(235, 255))
-    w = int(s * 0.105)
-    pts = [(0.33, 0.70), (0.33, 0.30), (0.67, 0.70), (0.67, 0.30)]
-    pts = [(x * s, y * s) for x, y in pts]
-    for a, b in zip(pts, pts[1:]):
-        d.line([a, b], fill=(12, 255), width=w)
-    for x, y in pts:
-        r = (w - 1) / 2
-        d.ellipse([x - r, y - r, x + r, y + r], fill=(12, 255))
-    cx, cy, r = 0.755 * s, 0.245 * s, 0.045 * s
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(12, 255))
-    return img.resize((size, size), Image.LANCZOS)
-
-
 def chat_mock(img):
     """A few dark message bubbles on the right, the client's own look."""
     layer = Image.new('LA', (W, H), (0, 0))
@@ -110,15 +93,14 @@ def main():
     img = vignette(img)
     img = img.convert('RGBA')
 
-    lg = logo(132)
-    img.alpha_composite(lg.convert('RGBA'), (96, 150))
+    img.alpha_composite(make_icons.master(132), (96, 150))
     d = ImageDraw.Draw(img)
-    d.text((92, 312), 'Nexo Desk', font=font('segoeuib.ttf', 88), fill=(240, 240, 240, 255))
+    d.text((92, 312), 'PrismGram', font=font('segoeuib.ttf', 88), fill=(240, 240, 240, 255))
     d.text((96, 420), 'Telegram client based on AyuGram', font=font('segoeuil.ttf', 32),
            fill=(170, 170, 170, 255))
     d.text((96, 470), 'plugins  ·  dark themes  ·  proxy  ·  signed updates',
            font=font('consola.ttf', 22), fill=(120, 120, 120, 255))
-    d.text((96, 560), 'github.com/Svat1r/NexoDesk', font=font('consola.ttf', 20),
+    d.text((96, 560), 'github.com/Svat1r/PrismGram', font=font('consola.ttf', 20),
            fill=(95, 95, 95, 255))
     img.convert('RGB').save(os.path.join(HERE, 'banner.png'), optimize=True)
     print('banner.png written')

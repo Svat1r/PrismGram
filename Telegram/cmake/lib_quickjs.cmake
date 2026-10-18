@@ -1,7 +1,7 @@
-# This file is part of Nexo Desk, based on AyuGram Desktop and
+# This file is part of PrismGram, based on AyuGram Desktop and
 # Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #
-# QuickJS-ng (MIT) for Nexo Desk plugins, pinned as a submodule in
+# QuickJS-ng (MIT) for PrismGram plugins, pinned as a submodule in
 # ThirdParty/quickjs. Only the core engine is built: quickjs-libc
 # (files, OS, workers) is left out on purpose, so plugins get no file
 # or OS access from the engine itself.

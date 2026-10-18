@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 //
 // Local banners, ported from the exteraGram plugin "Combined Custom Banner"
@@ -28,6 +28,21 @@ struct Options {
 	int darken = 45;    // 0..100
 	Crop crop = Crop::Center;
 	bool profileAvatars = false; // Avatar as banner for every profile.
+
+	// Chat header (top bar of an open chat).
+	bool chatHeader = true;      // Show per-chat banners in the header.
+	bool chatAvatars = false;    // Avatar as banner for every chat header.
+	bool chatEverywhere = false; // The common picture in every chat.
+
+	// Chat list header.
+	bool listBanner = false;
+	bool listWide = false;       // Also under the folder tabs.
+	int foldersTransparency = 60; // 0 = opaque tabs, 100 = see-through.
+};
+
+enum class Common {
+	Chats, // Picture for "chatEverywhere".
+	List,  // Picture of the chat list header.
 };
 
 [[nodiscard]] Options CurrentOptions();
@@ -41,6 +56,21 @@ void SetOptions(const Options &options);
 // avatar chosen for this peer, else the avatar if "profileAvatars" is on,
 // else a plugin banner (profile.banner). Null image when there is none.
 [[nodiscard]] rpl::producer<QImage> ProfileValue(not_null<PeerData*> peer);
+
+// Banner for the header of an open chat, effects applied, or null.
+[[nodiscard]] rpl::producer<QImage> ChatValue(not_null<PeerData*> peer);
+
+// Banner for the chat list header, effects applied, or null.
+[[nodiscard]] rpl::producer<QImage> ListValue();
+
+[[nodiscard]] bool HasCommon(Common which);
+void ChooseCommon(
+	Common which,
+	not_null<Window::SessionController*> controller);
+void RemoveCommon(Common which);
+
+// Draws image as a center/top/bottom crop filling rect.
+void PaintCover(QPainter &p, const QImage &image, QRect rect);
 
 // "Banner" submenu in the ⋮ menu of a profile.
 void AddMenuActions(

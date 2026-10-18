@@ -2611,12 +2611,12 @@ if (build_macstore)
     )
 else()
     if (CMAKE_GENERATOR STREQUAL Xcode)
-        set(bundle_identifier "app.nexodesk.NexoDesk$<$<CONFIG:Debug>:Debug>")
+        set(bundle_identifier "app.prismgram.PrismGram$<$<CONFIG:Debug>:Debug>")
     else()
-        set(bundle_identifier "app.nexodesk.NexoDesk")
+        set(bundle_identifier "app.prismgram.PrismGram")
     endif()
     set(bundle_entitlements "Telegram.entitlements")
-    set(output_name "NexoDesk")
+    set(output_name "PrismGram")
 endif()
 
 if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -2665,7 +2665,7 @@ get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (APPLE
     OR is_multi_config
     OR NOT CMAKE_EXECUTABLE_SUFFIX STREQUAL ""
-    OR NOT "${output_name}" STREQUAL "NexoDesk")
+    OR NOT "${output_name}" STREQUAL "PrismGram")
     set(output_folder ${CMAKE_BINARY_DIR})
 else()
     set(output_folder ${CMAKE_BINARY_DIR}/bin)
@@ -2797,7 +2797,7 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
         )
     endif()
 
-    # Nexo Desk: the packer signs Nexo updates, build it with auto-update.
+    # PrismGram: the packer signs Nexo updates, build it with auto-update.
     if (DESKTOP_APP_SPECIAL_TARGET OR NOT DESKTOP_APP_DISABLE_AUTOUPDATE)
         add_executable(Packer)
         init_target(Packer)
@@ -2814,7 +2814,7 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
 
         target_include_directories(Packer PRIVATE ${src_loc})
         if (NOT DESKTOP_APP_SPECIAL_TARGET)
-            # Nexo Desk: v2 packages only, no Telegram v1 RSA keys.
+            # PrismGram: v2 packages only, no Telegram v1 RSA keys.
             target_compile_definitions(Packer PRIVATE PACKER_DISABLE_PRIVATE)
         endif()
 

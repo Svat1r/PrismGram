@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #pragma once
 
@@ -8,7 +8,7 @@ namespace Nexo::Backup {
 // explicit list of settings files from tdata. Account data (keys,
 // sessions, message cache) is never written or read.
 struct Summary {
-	QString version;   // Nexo Desk version that made it.
+	QString version;   // PrismGram version that made it.
 	QString created;   // ISO date.
 	int files = 0;
 	bool plugins = false;

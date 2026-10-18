@@ -352,6 +352,55 @@ bool WritingEntry() {
 	return WritingEntryFlag;
 }
 
+#if defined Q_OS_WIN && !defined Q_OS_WINRT && !defined OS_WIN_STORE
+// PrismGram: the app was called Nexo Desk before 0.2.0. Move its data
+// folder (account, settings, plugins) to the new name once.
+void MigrateOldDataFolder() {
+	const auto now = QDir(psAppDataPath());
+	if (now.exists(u"tdata"_q)) {
+		return;
+	}
+	auto parent = now;
+	if (!parent.cdUp()) {
+		return;
+	}
+	const auto old = parent.absoluteFilePath(u"Nexo Desk"_q);
+	if (!QDir(old).exists(u"tdata"_q)) {
+		return;
+	}
+	if (now.exists() && !QDir().rmdir(now.absolutePath())) {
+		return; // Not empty, leave both as they are.
+	}
+	if (QDir().rename(old, now.absolutePath())) {
+		return;
+	}
+	// Renaming fails while anything holds a handle inside the old folder
+	// (Explorer, indexing). Copy it instead and keep the old one; copy to
+	// a temporary folder first so a failed copy never looks like data.
+	const auto temp = parent.absoluteFilePath(u"PrismGram.migrating"_q);
+	QDir(temp).removeRecursively();
+	const auto copy = [](const auto &self, const QString &from, const QString &to) -> bool {
+		if (!QDir().mkpath(to)) {
+			return false;
+		}
+		const auto entries = QDir(from).entryInfoList(
+			QDir::Files | QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
+		for (const auto &entry : entries) {
+			const auto target = to + '/' + entry.fileName();
+			if (entry.isDir()
+				? !self(self, entry.absoluteFilePath(), target)
+				: !QFile::copy(entry.absoluteFilePath(), target)) {
+				return false;
+			}
+		}
+		return true;
+	};
+	if (!copy(copy, old, temp) || !QDir().rename(temp, now.absolutePath())) {
+		QDir(temp).removeRecursively();
+	}
+}
+#endif
+
 void start() {
 	Assert(LogsData == nullptr);
 
@@ -365,7 +414,7 @@ void start() {
 #if (!defined Q_OS_WIN && !defined _DEBUG) || defined Q_OS_WINRT || defined OS_WIN_STORE || defined OS_MAC_STORE
 		cForceWorkingDir(psAppDataPath());
 #else // (!Q_OS_WIN && !_DEBUG) || Q_OS_WINRT || OS_WIN_STORE || OS_MAC_STORE
-		// Nexo Desk: keep user data apart from the install folder. Use the
+		// PrismGram: keep user data apart from the install folder. Use the
 		// exe folder only for portable copies that already have tdata
 		// there; otherwise always the %APPDATA% folder.
 		if (QDir(cExeDir() + u"tdata"_q).exists()) {
@@ -374,6 +423,7 @@ void start() {
 				cForceWorkingDir(psAppDataPath());
 			}
 		} else {
+			MigrateOldDataFolder();
 			cForceWorkingDir(psAppDataPath());
 		}
 #endif // (!Q_OS_WIN && !_DEBUG) || Q_OS_WINRT || OS_WIN_STORE || OS_MAC_STORE

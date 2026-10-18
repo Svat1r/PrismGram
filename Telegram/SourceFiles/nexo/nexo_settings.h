@@ -1,10 +1,10 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #pragma once
 
 namespace Nexo {
 
-// On/off options of Nexo Desk features.
+// On/off options of PrismGram features.
 enum class Flag {
 	BottomNavBar,
 	ProxyChip,
@@ -14,7 +14,7 @@ enum class Flag {
 	SpeedBoost,
 };
 
-// Client-level preferences of Nexo Desk. Stored as JSON in
+// Client-level preferences of PrismGram. Stored as JSON in
 // <working dir>/tdata/nexo/settings.json, next to the rest of the user
 // data, so it survives reinstalls and updates. Holds no secrets.
 class Settings final {

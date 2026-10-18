@@ -25,7 +25,7 @@ constexpr auto kStartWaitedInSession = 4 * kDownloadPartSize;
 constexpr auto kMaxWaitedInSession = 16 * kDownloadPartSize;
 constexpr auto kStartSessionsCount = 1;
 
-// Nexo Desk: experimental speed boost scales the bytes in flight.
+// PrismGram: experimental speed boost scales the bytes in flight.
 [[nodiscard]] int StartWaitedInSession() {
 	return kStartWaitedInSession * Nexo::Features::TransferBoost();
 }

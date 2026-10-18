@@ -181,7 +181,7 @@ Widget::Widget(
 		}, lifetime());
 	}
 
-	_footer->setText(QString("Nexo Desk v%1 (AyuGram %2)").arg(QString::fromLatin1(Nexo::kVersion), currentVersionText()));
+	_footer->setText(QString("PrismGram v%1 (AyuGram %2)").arg(QString::fromLatin1(Nexo::kVersion), currentVersionText()));
 }
 
 rpl::producer<> Widget::showSettingsRequested() const {

@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/updates/nexo_updates.h"
 
@@ -16,7 +16,7 @@ namespace Nexo::Updates {
 namespace {
 
 constexpr auto kReleasesApi
-	= "https://api.github.com/repos/Svat1r/NexoDesk/releases/latest";
+	= "https://api.github.com/repos/Svat1r/PrismGram/releases/latest";
 constexpr auto kMaxNotesSize = 256 * 1024;
 
 rpl::variable<int> FeedPluginApiVariable = 0;
@@ -43,7 +43,7 @@ void FetchReleaseNotes(Fn<void(ReleaseNotes)> done) {
 	const auto manager = new QNetworkAccessManager();
 	auto request = QNetworkRequest(QUrl(QString::fromLatin1(kReleasesApi)));
 	request.setRawHeader("Accept", "application/vnd.github+json");
-	request.setRawHeader("User-Agent", "NexoDesk");
+	request.setRawHeader("User-Agent", "PrismGram");
 	request.setAttribute(
 		QNetworkRequest::RedirectPolicyAttribute,
 		QNetworkRequest::NoLessSafeRedirectPolicy);
@@ -88,7 +88,7 @@ bool StartRollback(QString *error) {
 	// Updater.exe resolves tupdates relative to its working directory.
 	const auto started = QProcess::startDetached(
 		updater,
-		{ u"-rollback"_q, u"-exename"_q, QString::fromLatin1("NexoDesk.exe") },
+		{ u"-rollback"_q, u"-exename"_q, QString::fromLatin1("PrismGram.exe") },
 		cWorkingDir());
 	if (!started && error) {
 		*error = u"Could not start Updater.exe."_q;

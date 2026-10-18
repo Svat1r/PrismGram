@@ -323,7 +323,7 @@ private:
 	bool _hasGradientBg = false;
 	std::optional<QColor> _solidBg;
 	QImage _cachedGradient;
-	QImage _nexoBanner; // Nexo Desk: profile banner from a plugin.
+	QImage _nexoBanner; // PrismGram: profile banner from a plugin.
 	QPainterPath _cachedClipPath;
 	std::unique_ptr<Ui::Text::CustomEmoji> _patternEmoji;
 	QImage _basePatternImage;

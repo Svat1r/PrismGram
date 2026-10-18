@@ -722,13 +722,13 @@ bool UnpackUpdate(const QString &filepath) {
 	QByteArray compressed = input.readAll();
 	input.close();
 
-	// Nexo Desk: only v2 packages signed through the Nexo manifest are
+	// PrismGram: only v2 packages signed through the Nexo manifest are
 	// accepted. The v1 path below trusts AyuGram's RSA key, so a v1
 	// package is never installed, even if correctly signed.
 	if (Updates::IsV2UpdateFile(compressed)) {
 		return UnpackUpdateV2(filepath, compressed);
 	} else {
-		LOG(("Update Error: Nexo Desk accepts only v2 updates."));
+		LOG(("Update Error: PrismGram accepts only v2 updates."));
 		return false;
 	}
 	if (BuildIsCanary) {
@@ -901,7 +901,7 @@ bool ParseCommonMap(
 			continue;
 		}
 		const auto isAvailableAlpha = (type == "alpha");
-		// Nexo Desk: "released" is "base:counter" (or a plain base), read
+		// PrismGram: "released" is "base:counter" (or a plain base), read
 		// as the full (base << 32) | counter update version.
 		const auto availableVersion = [&]() -> uint64 {
 			if ((*version).isString()) {
@@ -1099,7 +1099,7 @@ std::optional<QString> HttpChecker::parseResponse(
 			return false;
 		}
 		bestLink = (*link).toString();
-		// Nexo Desk: lets Settings warn about plugin API changes.
+		// PrismGram: lets Settings warn about plugin API changes.
 		Nexo::Updates::SetFeedPluginApi(
 			map.value(u"plugin_api"_q).toInt());
 		return true;

@@ -1,4 +1,4 @@
-// This file is part of Nexo Desk, based on AyuGram Desktop and
+// This file is part of PrismGram, based on AyuGram Desktop and
 // Telegram Desktop. Licensed under GPLv3, see LEGAL.
 #include "nexo/plugins/plugin_manifest.h"
 
@@ -118,10 +118,10 @@ QString CheckCompatibility(const Manifest &manifest) {
 			.arg(kPluginApiVersion);
 	} else if (!manifest.minClient.isEmpty()
 		&& CompareVersions(client, manifest.minClient) < 0) {
-		return u"Needs Nexo Desk %1 or newer."_q.arg(manifest.minClient);
+		return u"Needs PrismGram %1 or newer."_q.arg(manifest.minClient);
 	} else if (!manifest.maxClient.isEmpty()
 		&& CompareVersions(client, manifest.maxClient) > 0) {
-		return u"Supports Nexo Desk up to %1."_q.arg(manifest.maxClient);
+		return u"Supports PrismGram up to %1."_q.arg(manifest.maxClient);
 	}
 	for (const auto &permission : manifest.permissions) {
 		if (!KnownPermissions().contains(permission)) {

@@ -221,6 +221,7 @@ private:
 	QString _customTitleText;
 	std::unique_ptr<EmojiInteractionSeenAnimation> _emojiInteractionSeen;
 	rpl::lifetime _activeChatLifetime;
+	QImage _nexoBanner; // PrismGram: chat header banner.
 
 	Ui::PeerBadge _titleBadge;
 	Ui::Text::String _title;

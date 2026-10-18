@@ -206,7 +206,7 @@ bool update() {
 					writeLog(L"Error: bad update, has Updater.exe! '" + tofname + L"' equal '" + updaterName + L"'");
 					delFolder();
 					return false;
-				} else if (equal(tofname, updateTo + L"NexoDesk.exe") && exeName != L"NexoDesk.exe") {
+				} else if (equal(tofname, updateTo + L"PrismGram.exe") && exeName != L"PrismGram.exe") {
 					wstring fullBinaryPath = updateTo + exeName;
 					writeLog(L"Target binary found: '" + tofname + L"', changing to '" + fullBinaryPath + L"'");
 					tofname = fullBinaryPath;
@@ -245,7 +245,7 @@ bool update() {
 		}
 	}
 
-	// Nexo Desk: back up every file before replacing it. A failed copy
+	// PrismGram: back up every file before replacing it. A failed copy
 	// restores the backups, a finished update keeps them in
 	// tupdates\previous so the user can go back to the previous version.
 	const wstring backupDir = L"tupdates\\backup";
@@ -298,7 +298,7 @@ bool update() {
 			if (!copyResult) {
 				writeLog(L"Error: failed to copy, asking to retry..");
 				WCHAR errMsg[2048];
-				wsprintf(errMsg, L"Failed to update Nexo Desk :(\n%s is not accessible.", tofname.c_str());
+				wsprintf(errMsg, L"Failed to update PrismGram :(\n%s is not accessible.", tofname.c_str());
 				if (MessageBox(0, errMsg, L"Update error!", MB_ICONERROR | MB_RETRYCANCEL) != IDRETRY) {
 					restoreBackups(i + 1);
 					fullClearPath(backupDir);
@@ -309,7 +309,7 @@ bool update() {
 		} while (!copyResult);
 	}
 
-	// Nexo Desk: keep the replaced files as the previous version.
+	// PrismGram: keep the replaced files as the previous version.
 	{
 		wstring list;
 		// Backup paths as they will be after the folder is renamed.
@@ -338,7 +338,7 @@ bool update() {
 	return true;
 }
 
-// Nexo Desk: "-rollback" puts back the files saved by the last update.
+// PrismGram: "-rollback" puts back the files saved by the last update.
 bool rollbackUpdate() {
 	const wstring listPath = L"tupdates\\previous\\files.txt";
 	HANDLE listFile = CreateFile(listPath.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -485,14 +485,14 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				exeName = args[i];
 				for (int j = 0, l = exeName.size(); j < l; ++j) {
 					if (exeName[j] == L'/' || exeName[j] == L'\\') {
-						exeName = L"NexoDesk.exe";
+						exeName = L"PrismGram.exe";
 						break;
 					}
 				}
 			}
 		}
 		if (exeName.empty()) {
-			exeName = L"NexoDesk.exe";
+			exeName = L"PrismGram.exe";
 		}
 		if (needupdate) writeLog(L"Need to update!");
 		if (autostart) writeLog(L"From autostart!");

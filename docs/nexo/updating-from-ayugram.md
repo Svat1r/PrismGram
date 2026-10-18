@@ -1,6 +1,6 @@
 # Taking new AyuGram releases
 
-Nexo Desk is never replaced by a new AyuGram version. New AyuGram code is
+PrismGram is never replaced by a new AyuGram version. New AyuGram code is
 merged in, tested on its own branch, and only then reaches `main`.
 
 1. Fetch: `git fetch upstream`

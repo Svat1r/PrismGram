@@ -1,4 +1,4 @@
-"""Nexo Desk update keys: create once, then use for every release.
+"""PrismGram update keys: create once, then use for every release.
 
   python nexo_update_keys.py --keys-dir C:\\TBuild\\nexo-keys create
 

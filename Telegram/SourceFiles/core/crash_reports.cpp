@@ -421,7 +421,7 @@ StartResult Start() {
 		fclose(f);
 
 		LOG(("Opened '%1' for reading, the previous "
-			"Nexo Desk launch was not finished properly :( "
+			"PrismGram launch was not finished properly :( "
 			"Crash log size: %2").arg(ReportPath).arg(lastdump.size()));
 
 		return lastdump;

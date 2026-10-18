@@ -1,4 +1,4 @@
-# Building Nexo Desk on Windows x64
+# Building PrismGram on Windows x64
 
 Based on `docs/building-win.md` from AyuGram, with the steps actually used.
 
@@ -59,7 +59,7 @@ All commands run in a terminal initialized with:
    cmake --build ..\out --config Release --target Telegram
    ```
 
-   The result is `C:\TBuild\tdesktop\out\Release\NexoDesk.exe`.
+   The result is `C:\TBuild\tdesktop\out\Release\PrismGram.exe`.
 
 ## Known build issues
 

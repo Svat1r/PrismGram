@@ -1,12 +1,12 @@
-# Nexo Desk
+# PrismGram
 
-Nexo Desk is a Telegram Desktop client based on AyuGram Desktop, which is
+PrismGram is a Telegram Desktop client based on AyuGram Desktop, which is
 itself based on Telegram Desktop. It keeps all AyuGram features and adds its
 own branding, interface and settings.
 
 Base versions: AyuGram Desktop 7.2.9 (commit d4b7546), Telegram Desktop 7.2.9.
 License: GPLv3 with the OpenSSL exception, same as the base (see `LEGAL`).
-AyuGram asks to credit its authors: Nexo Desk is built on their work.
+AyuGram asks to credit its authors: PrismGram is built on their work.
 
 Status of everything listed here is tracked in [status.md](status.md).
 
@@ -14,7 +14,7 @@ Status of everything listed here is tracked in [status.md](status.md).
 
 | Path | What |
 |---|---|
-| `Telegram/SourceFiles/nexo/` | All Nexo Desk code |
+| `Telegram/SourceFiles/nexo/` | All PrismGram code |
 | `Telegram/SourceFiles/nexo/nexo_settings.*` | Nexo settings, stored in `tdata/nexo/settings.json` |
 | `Telegram/SourceFiles/nexo/nexo_lang.*` | Built-in translations of `nexo_*` strings |
 | `Telegram/SourceFiles/nexo/settings/` | Settings sections: Connection, Appearance |
@@ -32,7 +32,7 @@ Kept small on purpose, so AyuGram updates merge with few conflicts.
 
 | File | Change |
 |---|---|
-| `Telegram/CMakeLists.txt` | Nexo sources, exe name `NexoDesk`, bundle id |
+| `Telegram/CMakeLists.txt` | Nexo sources, exe name `PrismGram`, bundle id |
 | `Telegram/cmake/td_ui.cmake` | `nexo_ui.style` |
 | `Telegram/build/prepare/prepare.py` | MSYS2 ucrt64 packages (same fix as upstream tdesktop) |
 | `Telegram/Resources/langs/lang.strings` | English `nexo_*` strings |
@@ -50,14 +50,14 @@ Kept small on purpose, so AyuGram updates merge with few conflicts.
 
 ## User data
 
-User data lives in `%APPDATA%\Nexo Desk\` on Windows (from `AppName`), apart
+User data lives in `%APPDATA%\PrismGram\` on Windows (from `AppName`), apart
 from the install folder and apart from AyuGram's and Telegram's data. Nexo
 never reads the AyuGram or Telegram data folders. Updates and reinstalls do
 not touch it.
 
 ## Network
 
-Nexo Desk adds no network requests of its own so far. Proxy checks use the
+PrismGram adds no network requests of its own so far. Proxy checks use the
 base client's MTProto connection checks. Requests inherited from AyuGram are
 listed in [network.md](network.md).
 
@@ -65,7 +65,7 @@ listed in [network.md](network.md).
 
 | Branch | Purpose |
 |---|---|
-| `main` | Nexo Desk |
+| `main` | PrismGram |
 | `upstream-sync` | Merging new AyuGram releases before they reach `main` |
 | `experimental` | Features not ready for `main` |
 
