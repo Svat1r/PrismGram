@@ -140,9 +140,11 @@ void processNewShortcuts(const QString &iconPath) {
 	}
 
 	const auto shortcuts = {
-		path + u"AyuGram Desktop/AyuGram.lnk"_q,
-		path + u"AyuGram/AyuGram.lnk"_q,
-		path + u"AyuGram.lnk"_q,
+		// Nexo Desk: only our own shortcuts, never AyuGram's.
+		path + u"Nexo Desk/NexoDesk.lnk"_q,
+		path + u"Nexo Desk/Nexo Desk.lnk"_q,
+		path + u"NexoDesk.lnk"_q,
+		path + u"Nexo Desk.lnk"_q,
 	};
 	for (const auto &shortcut : shortcuts) {
 		const auto native = QDir::toNativeSeparators(shortcut).toStdWString();
