@@ -39,6 +39,11 @@ public:
 	// context is a JSON object passed to the item callback.
 	bool callMenuItem(int id, const QByteArray &context, QString *error);
 
+	// "profile.banner": asks the plugin's resolver for a banner link.
+	// user is a JSON object; returns an empty string when there is none.
+	[[nodiscard]] bool hasBannerResolver() const;
+	QString resolveBanner(const QByteArray &user, QString *error);
+
 private:
 	struct Callback;
 
@@ -56,6 +61,7 @@ private:
 	crl::time _deadline = 0;
 	std::vector<MenuItem> _menuItems;
 	std::vector<std::unique_ptr<Callback>> _callbacks;
+	std::unique_ptr<Callback> _bannerResolver;
 	bool _started = false;
 
 	friend struct RuntimeAccess;

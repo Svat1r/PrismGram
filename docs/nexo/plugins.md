@@ -45,7 +45,7 @@ See `plugin-example/` and `plugin-example/pack.py`.
   "min_client": "0.1.0",
   "max_client": "0.x",
   "entry": "main.js",
-  "permissions": ["menu.message", "messages.read", "clipboard.write", "settings"]
+  "permissions": ["menu.message", "messages.read", "clipboard.write", "settings", "profile.banner"]
 }
 ```
 
@@ -79,6 +79,7 @@ With permissions:
 | `messages.read` | `message.text` in that callback |
 | `clipboard.write` | `nexo.copyText(text)`, only works right after the user clicked the plugin's item |
 | `settings` | `nexo.settings.get(key, default)`, `nexo.settings.set(key, value)`; JSON values, 256 KB in total |
+| `profile.banner` | `nexo.profile.setBannerResolver(fn)`: `fn(user)` gets `{ id, username, firstName, bio }` and returns an `https://` image link or `null`. The client downloads it (5 MB max, no local or IP hosts) only if that exact link is in the user's bio, and draws it as the profile header |
 
 Lifecycle: the entry file runs once, then `onLoad()` if defined. When the
 plugin is turned off, removed or the app quits, `onUnload()` if defined.
@@ -120,3 +121,10 @@ All under the user data folder (`%APPDATA%\Nexo Desk\tdata\nexo\`):
 Network access, sending messages, chat/profile menus, plugin settings
 pages in the UI, update checks for plugins. They need their own
 permissions and review before being added.
+
+## Example: profile banners
+
+`plugin-example/profile-banners` shows banners in profiles. You set yours by
+adding `banner: https://i.imgur.com/XXXX.jpg` (or any direct image link) to
+your bio; everyone with the plugin sees it on your profile. The image host
+sees the IP address of people who open your profile, as with any image link.

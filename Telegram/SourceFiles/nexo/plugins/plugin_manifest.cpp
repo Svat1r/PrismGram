@@ -31,6 +31,7 @@ const QStringList &KnownPermissions() {
 		QString::fromLatin1(kPermissionSettings),
 		QString::fromLatin1(kPermissionMessagesRead),
 		QString::fromLatin1(kPermissionClipboard),
+		QString::fromLatin1(kPermissionProfileBanner),
 	};
 	return result;
 }

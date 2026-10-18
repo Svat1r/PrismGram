@@ -434,6 +434,23 @@ bool Manager::hasPermission(
 		&& i->manifest.permissions.contains(QString::fromLatin1(permission));
 }
 
+QString Manager::resolveBanner(const QByteArray &user) {
+	for (const auto &plugin : _list) {
+		const auto i = _runtimes.find(plugin.manifest.id);
+		if (i == end(_runtimes) || !i->second->hasBannerResolver()) {
+			continue;
+		}
+		auto error = QString();
+		const auto link = i->second->resolveBanner(user, &error);
+		if (!error.isEmpty()) {
+			log(plugin.manifest.id, u"Banner resolver failed: "_q + error);
+		} else if (!link.isEmpty()) {
+			return link;
+		}
+	}
+	return QString();
+}
+
 void Manager::activate(
 		const MessageMenuItem &item,
 		const QByteArray &context,

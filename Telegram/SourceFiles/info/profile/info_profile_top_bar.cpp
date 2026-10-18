@@ -7,6 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_top_bar.h"
 
+#include "nexo/profile/profile_banners.h"
+#include <QtGui/QPainterPath>
+
 #include "api/api_peer_colors.h"
 #include "api/api_peer_photo.h"
 #include "api/api_user_privacy.h"
@@ -457,6 +460,13 @@ TopBar::TopBar(
 }())
 , _backToggles(std::move(descriptor.backToggles)) {
 	setObjectName(u"profileTopBar"_q);
+	if (const auto user = _peer->asUser(); user && !_savedMessages) {
+		// Nexo Desk: banner from a "profile.banner" plugin.
+		Nexo::ProfileBanners::Value(user) | rpl::on_next([=](QImage image) {
+			_nexoBanner = std::move(image);
+			update();
+		}, lifetime());
+	}
 	_peer->updateFull();
 	_communityEffect = (_source == Source::Community);
 	if (const auto broadcast = _peer->monoforumBroadcast()) {
@@ -2924,6 +2934,42 @@ void TopBar::paintUserpic(QPainter &p, const QRect &geometry) {
 	}
 }
 
+// Nexo Desk: the banner covers the header (center crop) with rounded top
+// corners; a fade to the window color keeps the name readable in any theme.
+void TopBar::paintNexoBanner(QPainter &p) {
+	const auto target = QRectF(rect());
+	const auto source = QSizeF(_nexoBanner.size());
+	const auto scale = std::max(
+		target.width() / source.width(),
+		target.height() / source.height());
+	const auto size = source * scale;
+	const auto drawn = QRectF(
+		target.x() + (target.width() - size.width()) / 2.,
+		target.y() + (target.height() - size.height()) / 2.,
+		size.width(),
+		size.height());
+	auto hq = PainterHighQualityEnabler(p);
+	p.save();
+	auto clip = QPainterPath();
+	const auto radius = st::boxRadius;
+	clip.addRoundedRect(
+		rect() + QMargins{ 0, 0, 0, radius + 1 },
+		radius,
+		radius);
+	p.setClipPath(clip);
+	p.drawImage(drawn, _nexoBanner);
+	auto fade = QLinearGradient(0, 0, 0, height());
+	auto bg = st::windowBg->c;
+	bg.setAlpha(40);
+	fade.setColorAt(0., bg);
+	bg.setAlpha(150);
+	fade.setColorAt(0.55, bg);
+	bg.setAlpha(235);
+	fade.setColorAt(1., bg);
+	p.fillRect(rect(), fade);
+	p.restore();
+}
+
 void TopBar::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
 	const auto geometry = userpicGeometry();
@@ -2978,7 +3024,9 @@ void TopBar::paintEvent(QPaintEvent *e) {
 			p.drawImage(x, y, _cachedGradient);
 		}
 	}
-	if (_patternEmoji && _patternEmoji->ready()) {
+	if (!_nexoBanner.isNull()) {
+		paintNexoBanner(p);
+	} else if (_patternEmoji && _patternEmoji->ready()) {
 		paintAnimatedPattern(p, clipBounds, geometry);
 	}
 

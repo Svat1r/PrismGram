@@ -22,6 +22,7 @@ enum class Function {
 	SettingGet,
 	SettingSet,
 	AddMessageItem,
+	SetBannerResolver,
 };
 
 [[nodiscard]] QString ToQString(JSContext *ctx, JSValueConst value) {
@@ -99,6 +100,19 @@ struct RuntimeAccess {
 			runtime->_menuItems.push_back({ id, arg(0).left(64) });
 			return JS_NewInt32(ctx, id);
 		}
+		case Function::SetBannerResolver: {
+			if (argc < 1 || !JS_IsFunction(ctx, argv[0])) {
+				return JS_ThrowTypeError(
+					ctx,
+					"profile.setBannerResolver(callback)");
+			}
+			if (runtime->_bannerResolver) {
+				JS_FreeValue(ctx, runtime->_bannerResolver->value);
+			}
+			runtime->_bannerResolver = std::make_unique<Runtime::Callback>(
+				Runtime::Callback{ JS_DupValue(ctx, argv[0]) });
+			return JS_UNDEFINED;
+		}
 		}
 		return JS_UNDEFINED;
 	}
@@ -121,6 +135,10 @@ Runtime::~Runtime() {
 		JS_FreeValue(_context, callback->value);
 	}
 	_callbacks.clear();
+	if (_bannerResolver) {
+		JS_FreeValue(_context, _bannerResolver->value);
+		_bannerResolver = nullptr;
+	}
 	JS_FreeContext(_context);
 	JS_FreeRuntime(_runtime);
 }
@@ -172,6 +190,11 @@ void Runtime::installApi() {
 		const auto menu = JS_NewObject(ctx);
 		add(menu, "addMessageItem", Function::AddMessageItem, 2);
 		JS_SetPropertyStr(ctx, nexo, "menu", menu);
+	}
+	if (has(kPermissionProfileBanner)) {
+		const auto profile = JS_NewObject(ctx);
+		add(profile, "setBannerResolver", Function::SetBannerResolver, 1);
+		JS_SetPropertyStr(ctx, nexo, "profile", profile);
 	}
 	JS_SetPropertyStr(ctx, global, "nexo", nexo);
 	JS_FreeValue(ctx, global);
@@ -285,6 +308,44 @@ bool Runtime::callMenuItem(
 	}
 	JS_FreeValue(_context, called);
 	return true;
+}
+
+bool Runtime::hasBannerResolver() const {
+	return _started && (_bannerResolver != nullptr);
+}
+
+QString Runtime::resolveBanner(const QByteArray &user, QString *error) {
+	if (!hasBannerResolver()) {
+		return QString();
+	}
+	const auto argument = JS_ParseJSON(
+		_context,
+		user.constData(),
+		user.size(),
+		"<user>");
+	if (JS_IsException(argument)) {
+		takeException(error);
+		return QString();
+	}
+	armDeadline();
+	auto args = argument;
+	const auto result = JS_Call(
+		_context,
+		_bannerResolver->value,
+		JS_UNDEFINED,
+		1,
+		&args);
+	_deadline = 0;
+	JS_FreeValue(_context, argument);
+	if (JS_IsException(result)) {
+		takeException(error);
+		return QString();
+	}
+	const auto link = JS_IsString(result)
+		? ToQString(_context, result).left(2048)
+		: QString();
+	JS_FreeValue(_context, result);
+	return link;
 }
 
 } // namespace Nexo::Plugins

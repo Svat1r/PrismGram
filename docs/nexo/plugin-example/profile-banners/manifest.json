@@ -1,0 +1,12 @@
+{
+  "id": "nexo.profile.banners",
+  "name": "Profile banners",
+  "version": "1.0.0",
+  "author": "Nexo Desk",
+  "description": "Shows a banner at the top of a profile. To set yours, add a line to your bio: banner: https://i.imgur.com/XXXX.jpg (or just a direct image link). Everyone with this plugin sees it.",
+  "api_version": 1,
+  "min_client": "0.1.0",
+  "max_client": "0.x",
+  "entry": "main.js",
+  "permissions": ["profile.banner"]
+}

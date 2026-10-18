@@ -28,6 +28,7 @@ inline constexpr auto kPermissionMenuMessage = "menu.message";
 inline constexpr auto kPermissionSettings = "settings";
 inline constexpr auto kPermissionMessagesRead = "messages.read";
 inline constexpr auto kPermissionClipboard = "clipboard.write";
+inline constexpr auto kPermissionProfileBanner = "profile.banner";
 
 [[nodiscard]] const QStringList &KnownPermissions();
 [[nodiscard]] ManifestResult ParseManifest(const QByteArray &json);

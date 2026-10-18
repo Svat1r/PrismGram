@@ -66,6 +66,9 @@ public:
 	[[nodiscard]] bool hasPermission(
 		const QString &id,
 		const char *permission) const;
+	// First non-empty banner link from running "profile.banner" plugins.
+	[[nodiscard]] QString resolveBanner(const QByteArray &user);
+
 	void activate(
 		const MessageMenuItem &item,
 		const QByteArray &context,
