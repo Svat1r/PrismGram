@@ -17,6 +17,6 @@ compiled or run. Updated as work goes on.
 | Own update keys and server | Not started |
 | Nexo themes (Night, AMOLED, Ocean, Violet, Forest) in Appearance | Compiles, app starts; needs a logged-in session to check |
 | Proxy chip in the search field (field was already pill-shaped) | Compiles, app starts; needs a logged-in session to check |
-| Plugin system and manager | Not started (see exteragram-comparison.md) |
+| Plugin system and manager | Design proposal in plugins.md; engine choice pending |
 | Linux and macOS builds | Not attempted |
 | Tests | Launch and login screen (QR code from Telegram servers) checked; nothing else yet |
