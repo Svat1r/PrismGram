@@ -104,6 +104,24 @@ public:
 
 	rpl::producer<bool> listShareableChanges() const;
 
+	// Nexo Desk: bulk proxy tools for the Connection settings section.
+	// Implemented in nexo/connection/nexo_proxy_tools.cpp.
+	struct ImportResult {
+		int added = 0;
+		int existing = 0;
+		int invalid = 0;
+	};
+	ImportResult importLinks(const QString &text);
+	[[nodiscard]] int itemsCount() const;
+	[[nodiscard]] bool checking() const;
+	[[nodiscard]] int unavailableCount() const;
+	// Applies the available non-WEB proxy with the lowest ping.
+	// Returns false when none responded.
+	bool applyFastest();
+	int deleteUnavailable();
+	[[nodiscard]] ProxyData selectedData() const;
+	[[nodiscard]] int selectedPing() const;
+
 	~ProxiesBoxController();
 
 private:

@@ -163,6 +163,17 @@ set(ayugram_files
         ayu/ui/settings/settings_main.h
         ayu/ui/settings/settings_other.cpp
         ayu/ui/settings/settings_other.h
+        nexo/nexo_lang.cpp
+        nexo/nexo_lang.h
+        nexo/nexo_settings.cpp
+        nexo/nexo_settings.h
+        nexo/settings/settings_appearance.cpp
+        nexo/settings/settings_appearance.h
+        nexo/ui/bottom_nav_bar.cpp
+        nexo/ui/bottom_nav_bar.h
+        nexo/connection/nexo_proxy_tools.cpp
+        nexo/settings/settings_connection.cpp
+        nexo/settings/settings_connection.h
         ayu/ui/settings/filters/settings_filters_list.cpp
         ayu/ui/settings/filters/settings_filters_list.h
         ayu/ui/settings/filters/per_dialog_filter.cpp
@@ -2566,12 +2577,12 @@ if (build_macstore)
     )
 else()
     if (CMAKE_GENERATOR STREQUAL Xcode)
-        set(bundle_identifier "one.ayugram.AyuGramDesktop$<$<CONFIG:Debug>:Debug>")
+        set(bundle_identifier "app.nexodesk.NexoDesk$<$<CONFIG:Debug>:Debug>")
     else()
-        set(bundle_identifier "one.ayugram.AyuGramDesktop")
+        set(bundle_identifier "app.nexodesk.NexoDesk")
     endif()
     set(bundle_entitlements "Telegram.entitlements")
-    set(output_name "AyuGram")
+    set(output_name "NexoDesk")
 endif()
 
 if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -2620,7 +2631,7 @@ get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (APPLE
     OR is_multi_config
     OR NOT CMAKE_EXECUTABLE_SUFFIX STREQUAL ""
-    OR NOT "${output_name}" STREQUAL "AyuGram")
+    OR NOT "${output_name}" STREQUAL "NexoDesk")
     set(output_folder ${CMAKE_BINARY_DIR})
 else()
     set(output_folder ${CMAKE_BINARY_DIR}/bin)

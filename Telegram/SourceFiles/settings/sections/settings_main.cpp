@@ -94,6 +94,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/ui/settings/settings_main.h"
 #include "ayu/ui/utils/ayu_profile_values.h"
 #include "ayu/utils/telegram_helpers.h"
+#include "nexo/settings/settings_appearance.h"
+#include "nexo/settings/settings_connection.h"
 
 
 namespace Settings {
@@ -395,6 +397,18 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.targetSection = AyuMain::Id(),
 		.icon = { &st::menuIconPremium },
 		.keywords = { u"ayu"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::nexo_appearance_title(),
+		.targetSection = NexoAppearanceId(),
+		.icon = { &st::menuIconPalette },
+		.keywords = { u"theme"_q, u"appearance"_q, u"panel"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::nexo_connection_title(),
+		.targetSection = NexoConnectionId(),
+		.icon = { &st::menuIconNetwork },
+		.keywords = { u"proxy"_q, u"connection"_q, u"vpn"_q },
 	});
 	builder.addSkip();
 	builder.addDivider();

@@ -111,6 +111,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 // AyuGram includes
 #include "ayu/ayu_settings.h"
 #include "ayu/utils/telegram_helpers.h"
+#include "nexo/nexo_settings.h"
+#include "nexo/ui/bottom_nav_bar.h"
 #include "base/platform/base_platform_haptic.h"
 
 
@@ -817,6 +819,21 @@ Widget::Widget(
 
 	if (_layout != Layout::Child) {
 		setupConnectingWidget();
+
+		// Nexo Desk: floating bottom navigation.
+		_nexoNavBar.create(this, controller, [=] {
+			if (_openedForum) {
+				controller->closeForum();
+			} else if (_openedFolder) {
+				controller->closeFolder();
+			} else {
+				jumpToTop();
+			}
+		});
+		Nexo::Settings::Instance().bottomNavBarValue(
+		) | rpl::skip(1) | rpl::on_next([=] {
+			updateControlsGeometry();
+		}, lifetime());
 
 		changeOpenedFolder(
 			controller->openedFolder().current(),
@@ -4746,6 +4763,12 @@ void Widget::updateControlsGeometry() {
 				buttonHeight);
 		}
 	};
+	if (_nexoNavBar) {
+		_nexoNavBar->setVisible(Nexo::Settings::Instance().bottomNavBar()
+			&& !_childList
+			&& width() >= st::columnMinimalWidthLeft);
+	}
+	putBottomButton(_nexoNavBar);
 	putBottomButton(_updateTelegram);
 	putBottomButton(_downloadBar);
 	putBottomButton(_loadMoreChats);

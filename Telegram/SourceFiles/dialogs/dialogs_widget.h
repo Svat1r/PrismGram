@@ -34,6 +34,10 @@ namespace Main {
 class Session;
 } // namespace Main
 
+namespace Nexo::Ui {
+class BottomNavBar;
+} // namespace Nexo::Ui
+
 namespace HistoryView {
 class TopBarWidget;
 class ContactStatus;
@@ -379,6 +383,7 @@ private:
 	object_ptr<BottomButton> _updateTelegram = { nullptr };
 	object_ptr<BottomButton> _loadMoreChats = { nullptr };
 	std::unique_ptr<Ui::DownloadBar> _downloadBar;
+	object_ptr<Nexo::Ui::BottomNavBar> _nexoNavBar = { nullptr };
 	std::unique_ptr<Window::ConnectionState> _connecting;
 
 	Ui::Animations::Simple _scrollToAnimation;

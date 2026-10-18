@@ -17,8 +17,13 @@ set(ayugram_style_files
         ayu/ui/settings/ayu_settings.style
 )
 
+set(nexo_style_files
+        nexo/ui/nexo_ui.style
+)
+
 set(style_files
     ${ayugram_style_files}
+    ${nexo_style_files}
 
     ui/td_common.style
     ui/filter_icons.style

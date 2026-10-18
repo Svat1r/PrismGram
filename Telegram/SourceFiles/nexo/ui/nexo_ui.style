@@ -1,0 +1,21 @@
+/*
+ * This file is part of Nexo Desk, based on AyuGram Desktop and
+ * Telegram Desktop. Licensed under GPLv3, see LEGAL.
+ */
+
+using "ui/basic.style";
+using "ui/colors.palette";
+
+// Floating bottom navigation under the chat list.
+nexoNavBarMargin: margins(10px, 4px, 10px, 10px);
+nexoNavBarHeight: 54px;
+nexoNavBarRadius: 27px;
+nexoNavBarInner: margins(5px, 5px, 5px, 5px);
+nexoNavItemRadius: 22px;
+nexoNavIconTop: 3px;
+nexoNavLabelBottom: 6px;
+nexoNavLabelFont: font(11px);
+nexoNavBadgeFont: font(10px semibold);
+nexoNavBadgeHeight: 15px;
+nexoNavBadgePadding: 4px;
+nexoNavBadgeShift: point(12px, 2px);
