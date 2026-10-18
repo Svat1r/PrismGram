@@ -5,7 +5,7 @@
 namespace Nexo {
 
 // PrismGram's own version, separate from the base version below.
-inline constexpr auto kVersion = "0.2.0";
+inline constexpr auto kVersion = "0.2.1";
 
 // The AyuGram Desktop release this build is based on.
 inline constexpr auto kBaseName = "AyuGram Desktop";
@@ -17,7 +17,7 @@ inline constexpr auto kPluginApiVersion = 1;
 // Nexo release counter for updates: increase by one for every release.
 // Update versions are (base AppVersion << 32) | counter, so a new Nexo
 // release on the same AyuGram base is newer, and a new base always is.
-inline constexpr auto kUpdateCounter = 2;
+inline constexpr auto kUpdateCounter = 3;
 
 // Where the update feed ("current6") and packages are published.
 inline constexpr auto kUpdatesPrefix
