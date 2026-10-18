@@ -200,6 +200,8 @@ set(ayugram_files
         nexo/plugins/plugin_runtime.h
         nexo/profile/profile_banners.cpp
         nexo/profile/profile_banners.h
+        nexo/banners/nexo_banners.cpp
+        nexo/banners/nexo_banners.h
         nexo/settings/settings_plugins.cpp
         nexo/settings/settings_plugins.h
         nexo/connection/nexo_proxy_tools.cpp

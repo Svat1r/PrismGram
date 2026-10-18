@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_top_bar.h"
 
-#include "nexo/profile/profile_banners.h"
+#include "nexo/banners/nexo_banners.h"
 #include <QtGui/QPainterPath>
 
 #include "api/api_peer_colors.h"
@@ -460,9 +460,9 @@ TopBar::TopBar(
 }())
 , _backToggles(std::move(descriptor.backToggles)) {
 	setObjectName(u"profileTopBar"_q);
-	if (const auto user = _peer->asUser(); user && !_savedMessages) {
-		// Nexo Desk: banner from a "profile.banner" plugin.
-		Nexo::ProfileBanners::Value(user) | rpl::on_next([=](QImage image) {
+	if (!_savedMessages) {
+		// Nexo Desk: local banner, avatar banner or a plugin banner.
+		Nexo::Banners::ProfileValue(_peer) | rpl::on_next([=](QImage image) {
 			_nexoBanner = std::move(image);
 			update();
 		}, lifetime());
@@ -2945,7 +2945,8 @@ void TopBar::paintNexoBanner(QPainter &p) {
 	const auto size = source * scale;
 	const auto drawn = QRectF(
 		target.x() + (target.width() - size.width()) / 2.,
-		target.y() + (target.height() - size.height()) / 2.,
+		target.y() + (target.height() - size.height())
+			* Nexo::Banners::CropAlign(),
 		size.width(),
 		size.height());
 	auto hq = PainterHighQualityEnabler(p);
