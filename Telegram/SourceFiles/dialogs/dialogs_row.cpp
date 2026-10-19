@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_row.h"
 
+#include "nexo/hidden/nexo_hidden.h"
+
 #include "ui/chat/chat_theme.h" // CountAverageColor.
 #include "ui/color_contrast.h"
 #include "ui/effects/credits_graphics.h"
@@ -443,6 +445,12 @@ void Row::recountHeight(float64 narrowRatio, FilterId filterId) {
 			st.height,
 			st::defaultDialogRow.height,
 			narrowRatio);
+	// PrismGram: hidden chats take no place until unlocked with the PIN.
+	if (const auto history = _id.history()) {
+		if (Nexo::Hidden::ShouldHide(history->peer)) {
+			_height = 0;
+		}
+	}
 }
 
 uint64 Row::sortKey(FilterId filterId) const {

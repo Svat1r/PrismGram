@@ -175,6 +175,10 @@ set(ayugram_files
         nexo/ui/bottom_nav_bar.h
         nexo/ui/proxy_chip.cpp
         nexo/ui/proxy_chip.h
+        nexo/ui/live_wallpaper.cpp
+        nexo/ui/live_wallpaper.h
+        nexo/hidden/nexo_hidden.cpp
+        nexo/hidden/nexo_hidden.h
         nexo/ui/theme_picker.cpp
         nexo/ui/theme_picker.h
         nexo/themes/nexo_themes.cpp

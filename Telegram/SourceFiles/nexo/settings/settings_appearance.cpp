@@ -11,6 +11,8 @@
 #include "nexo/nexo_settings.h"
 #include "nexo/ui/theme_picker.h"
 #include "nexo/banners/nexo_banners.h"
+#include "nexo/ui/live_wallpaper.h"
+#include "lang/lang_instance.h"
 #include "base/options.h"
 #include "ui/widgets/discrete_sliders.h"
 #include "settings/settings_builder.h"
@@ -342,6 +344,84 @@ void BuildBanners(SectionBuilder &builder) {
 	builder.addDividerText(tr::nexo_banners_folders_about());
 }
 
+[[nodiscard]] rpl::producer<QString> Text(const char *en, const char *ru) {
+	return rpl::single(Lang::GetInstance().id().startsWith(u"ru"_q)
+		? QString::fromUtf8(ru)
+		: QString::fromUtf8(en));
+}
+
+void AddLiveSlider(
+		SectionBuilder &builder,
+		std::vector<int> values,
+		std::vector<QString> labels,
+		Fn<int(const Nexo::LiveWallpaper::Options&)> get,
+		Fn<void(Nexo::LiveWallpaper::Options&, int)> set) {
+	builder.add([=](const WidgetContext &ctx) {
+		auto slider = object_ptr<Ui::SettingsSlider>(
+			ctx.container,
+			st::settingsSlider);
+		const auto raw = slider.data();
+		for (const auto &label : labels) {
+			raw->addSection(label);
+		}
+		const auto current = get(Nexo::LiveWallpaper::CurrentOptions());
+		auto best = 0;
+		for (auto i = 0; i != int(values.size()); ++i) {
+			if (std::abs(values[i] - current)
+				< std::abs(values[best] - current)) {
+				best = i;
+			}
+		}
+		raw->setActiveSectionFast(best);
+		raw->sectionActivated(
+		) | rpl::on_next([=](int index) {
+			auto options = Nexo::LiveWallpaper::CurrentOptions();
+			set(options, values[index]);
+			Nexo::LiveWallpaper::SetOptions(options);
+		}, raw->lifetime());
+		const auto &padding = st::settingsButtonNoIcon.padding;
+		return SectionBuilder::WidgetToAdd{
+			.widget = std::move(slider),
+			.margin = { padding.left(), 0, padding.right(), 0 },
+		};
+	});
+}
+
+void BuildLiveWallpaper(SectionBuilder &builder) {
+	using Options = Nexo::LiveWallpaper::Options;
+	const auto ru = Lang::GetInstance().id().startsWith(u"ru"_q);
+	builder.addSkip();
+	builder.addSubsectionTitle(Text("Live wallpaper in chats", "Живые обои в чатах"));
+	AddLiveSlider(
+		builder,
+		{ 0, 1, 2, 3, 4 },
+		ru
+			? std::vector<QString>{ u"Выкл"_q, u"Дождь"_q, u"Снег"_q, u"Зерно"_q, u"Звёзды"_q }
+			: std::vector<QString>{ u"Off"_q, u"Rain"_q, u"Snow"_q, u"Grain"_q, u"Stars"_q },
+		[](const Options &o) { return int(o.effect); },
+		[](Options &o, int v) { o.effect = Nexo::LiveWallpaper::Effect(v); });
+	builder.addSkip();
+	builder.addSubsectionTitle(Text("Density", "Плотность"));
+	AddLiveSlider(
+		builder,
+		{ 10, 25, 50, 75, 100 },
+		{ u"10"_q, u"25"_q, u"50"_q, u"75"_q, u"100"_q },
+		[](const Options &o) { return o.density; },
+		[](Options &o, int v) { o.density = v; });
+	builder.addSkip();
+	builder.addSubsectionTitle(Text("Speed", "Скорость"));
+	AddLiveSlider(
+		builder,
+		{ 25, 50, 100, 150, 200 },
+		{ u"25%"_q, u"50%"_q, u"100%"_q, u"150%"_q, u"200%"_q },
+		[](const Options &o) { return o.speed; },
+		[](Options &o, int v) { o.speed = v; });
+	builder.addSkip();
+	builder.addDividerText(Text(
+		"Drawn over the chat wallpaper, under the messages, at up to 20 frames a second, and paused while PrismGram is in the background. Uses some CPU while a chat is open.",
+		"Рисуются поверх обоев чата и под сообщениями, до 20 кадров в секунду, и ставятся на паузу, когда PrismGram в фоне. Пока открыт чат, немного нагружают процессор."));
+}
+
 const auto kMeta = BuildHelper({
 	.id = NexoAppearance::Id(),
 	.parentId = MainId(),
@@ -349,6 +429,7 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconPalette,
 }, [](SectionBuilder &builder) {
 	BuildNexoThemes(builder);
+	BuildLiveWallpaper(builder);
 	BuildNavigation(builder);
 	BuildBanners(builder);
 	BuildChats(builder);

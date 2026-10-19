@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
 
+#include "nexo/hidden/nexo_hidden.h"
+
 #include "dialogs/dialogs_three_state_icon.h"
 #include "dialogs/ui/chat_search_empty.h"
 #include "dialogs/ui/chat_search_in.h"
@@ -317,6 +319,17 @@ InnerWidget::InnerWidget(
 , _childListShown(std::move(childListShown))
 , _freezeTimer([=] { _shownList->unfreeze(); update(); }) {
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
+
+	// PrismGram: hidden chats show or hide after the PIN or the lock.
+	Nexo::Hidden::Changes(
+	) | rpl::on_next([=] {
+		_shownList->updateHeights(_narrowRatio);
+		if (!_filter.isEmpty()) {
+			refreshFilterResults();
+		}
+		refresh();
+		update();
+	}, lifetime());
 	setAccessibleName(tr::lng_recent_chats(tr::now));
 
 	_communityViewable.setRepaint([=] { update(); });
@@ -1309,7 +1322,9 @@ void InnerWidget::paintEvent(QPaintEvent *e) {
 					}
 
 					// Skip currently dragged chat to paint it above others after.
-					if (row->index() != promoted + _aboveIndex || _aboveIndex < 0) {
+					// PrismGram: hidden chats have no height and aren't painted.
+					if ((row->index() != promoted + _aboveIndex || _aboveIndex < 0)
+						&& row->height() > 0) {
 						paintDialog(row);
 					}
 
@@ -4454,6 +4469,20 @@ void InnerWidget::refreshFilterResults() {
 			_filterResults.emplace_back(row.get());
 			_filterResults.back().top = height;
 			_filterResults.back().row->recountHeight(_narrowRatio, _filterId);
+		}
+	}
+	if (Nexo::Hidden::Active(&session()) && !_filterResults.empty()) {
+		// PrismGram: hidden chats are not found while locked.
+		const auto firstTop = _filterResults.front().top;
+		_filterResults.erase(ranges::remove_if(_filterResults, [](
+				const FilterResult &result) {
+			const auto history = result.key().history();
+			return history && Nexo::Hidden::ShouldHide(history->peer);
+		}), end(_filterResults));
+		auto top = firstTop;
+		for (auto &result : _filterResults) {
+			result.top = top;
+			top += result.row->height();
 		}
 	}
 }

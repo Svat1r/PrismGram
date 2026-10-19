@@ -8,6 +8,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "window/window_peer_menu.h"
 
 #include "nexo/banners/nexo_banners.h"
+#include "nexo/hidden/nexo_hidden.h"
+#include "lang/lang_instance.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -1976,6 +1978,18 @@ void Filler::fillProfileActions() {
 	AyuUi::AddShadowBanAction(_peer, _addAction);
 	if (_peer) {
 		Nexo::Banners::AddMenuActions(_peer, _controller, _addAction);
+		{
+			// PrismGram: hidden chats.
+			const auto controller = _controller;
+			const auto peer = not_null<PeerData*>(_peer);
+			const auto hidden = Nexo::Hidden::IsHidden(peer);
+			_addAction(
+				Lang::GetInstance().id().startsWith(u"ru"_q)
+					? (hidden ? u"Вернуть чат в список"_q : u"Скрыть чат (PIN)"_q)
+					: (hidden ? u"Show chat in the list"_q : u"Hide chat (PIN)"_q),
+				[=] { Nexo::Hidden::Toggle(controller, peer); },
+				&st::menuIconArchive);
+		}
 	}
 	addViewDiscussion();
 	addDirectMessages();

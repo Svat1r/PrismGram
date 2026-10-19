@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_widget.h"
 
+#include "nexo/ui/live_wallpaper.h"
+
 #include "api/api_compose_with_ai.h"
 #include "api/api_editing.h"
 #include "api/api_bot.h"
@@ -11627,6 +11629,10 @@ void HistoryWidget::paintEvent(QPaintEvent *e) {
 		e->rect());
 
 	Painter p(this);
+	if (_list) {
+		// PrismGram: live wallpaper over the background, under messages.
+		Nexo::LiveWallpaper::Paint(this, p, _scroll->geometry());
+	}
 	const auto clip = e->rect();
 	if (_list) {
 		const auto restrictionHidden = fieldOrDisabledShown()

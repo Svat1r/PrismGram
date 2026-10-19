@@ -10,6 +10,9 @@
 #include "core/version.h"
 #include "mainwindow.h"
 #include "nexo/backup/settings_backup.h"
+#include "nexo/hidden/nexo_hidden.h"
+#include "lang/lang_instance.h"
+#include "main/main_session.h"
 #include "nexo/plugins/plugin_manager.h"
 #include "nexo/updates/nexo_updates.h"
 #include "settings/sections/settings_advanced.h"
@@ -260,6 +263,48 @@ void BuildBackup(SectionBuilder &builder) {
 	builder.addDividerText(tr::nexo_backup_about());
 }
 
+[[nodiscard]] rpl::producer<QString> HiddenText(const char *en, const char *ru) {
+	return rpl::single(Lang::GetInstance().id().startsWith(u"ru"_q)
+		? QString::fromUtf8(ru)
+		: QString::fromUtf8(en));
+}
+
+void BuildHidden(SectionBuilder &builder) {
+	const auto controller = builder.controller();
+	builder.addDivider();
+	builder.addSkip();
+	builder.addSubsectionTitle({
+		.id = u"nexo/client/hidden"_q,
+		.title = HiddenText("Hidden chats", "Скрытые чаты"),
+		.keywords = { u"hidden"_q, u"pin"_q, u"hide"_q },
+	});
+	builder.addButton({
+		.id = u"nexo/client/hidden_show"_q,
+		.title = HiddenText("Show hidden chats (PIN)", "Показать скрытые чаты (PIN)"),
+		.icon = { &st::menuIconUnarchive },
+		.onClick = [=] { Nexo::Hidden::Unlock(controller, nullptr); },
+		.keywords = { u"hidden"_q, u"pin"_q },
+	});
+	builder.addButton({
+		.id = u"nexo/client/hidden_lock"_q,
+		.title = HiddenText("Hide them again", "Скрыть их снова"),
+		.icon = { &st::menuIconLock },
+		.onClick = [] { Nexo::Hidden::Lock(); },
+		.keywords = { u"hidden"_q, u"lock"_q },
+	});
+	builder.addButton({
+		.id = u"nexo/client/hidden_pin"_q,
+		.title = HiddenText("Change PIN", "Изменить PIN"),
+		.icon = { &st::menuIconEdit },
+		.onClick = [=] { Nexo::Hidden::ChangePin(controller); },
+		.keywords = { u"hidden"_q, u"pin"_q },
+	});
+	builder.addSkip();
+	builder.addDividerText(HiddenText(
+		"To hide a chat, right-click it or open its menu, then Hide chat (PIN). Hidden chats leave the chat list and the search, and hide again a minute after PrismGram goes to the background. This hides chats on screen; it is not encryption.",
+		"Чтобы скрыть чат, нажмите на него правой кнопкой или откройте его меню → «Скрыть чат (PIN)». Скрытые чаты пропадают из списка и поиска и снова прячутся через минуту после того, как PrismGram уходит в фон. Это прячет чаты на экране, а не шифрует их."));
+}
+
 const auto kMeta = BuildHelper({
 	.id = NexoClient::Id(),
 	.parentId = MainId(),
@@ -269,6 +314,7 @@ const auto kMeta = BuildHelper({
 	BuildVersions(builder);
 	BuildUpdates(builder);
 	BuildBackup(builder);
+	BuildHidden(builder);
 });
 
 } // namespace
